@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "336188020120",
+    "firebase_url": "https://gosproject-edae6.firebaseio.com",
+    "project_id": "gosproject-edae6",
+    "storage_bucket": "gosproject-edae6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:336188020120:android:3f46696bf802ab3f",
+        "android_client_info": {
+          "package_name": "com.gosproj.gosproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "336188020120-gm389l3migurnfb7plgbvr5m8op3u347.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gosproj.gosproject",
+            "certificate_hash": "518c993fe3418848551641f725772d4109e4114f"
+          }
+        },
+        {
+          "client_id": "336188020120-2928o97g1ihqjf36lce4il4teoi3tu42.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkznlY6-YBmJJZrdf1l-B39_NSWKhRtSI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "336188020120-2928o97g1ihqjf36lce4il4teoi3tu42.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

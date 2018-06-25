@@ -1,0 +1,46 @@
+<resources>
+    <string name="app_name">KazRoadLab</string>
+    <string name="list_departures">Список выездов</string>
+    <string name="active_task">Активные задачи</string>
+    <string name="create_new_departure">Создать новый выезд</string>
+    <string name="load_departure">Загрузить выезд</string>
+    <string name="synchronization">Cинхронизация</string>
+    <string name="scanning">Сканирование документов</string>
+    <string name="qr_code_load_acts_msg">Наведите камеру на QR-код</string>
+    <string name="last_time_sync">Время последней синхронизация</string>
+    <string name="text_qr_activity">Наведите камеру на QR код чтобы загрузить выезд</string>
+    <string name="load_new_departure">Новый выезд загружен</string>
+    <string name="fail_load_new_departure">Не удалось загрузить выезд</string>
+    <string name="fail_load_new_departure_is_true">Данный выезд уже загружен</string>
+    <string name="departuresIn">Выезды на</string>
+    <string name="act_number">Акт номер</string>
+    <string name="qr_scan_fail">Не удалось считать QR-код</string>
+    <string name="act">Акт</string>
+    <string name="exit">Выход</string>
+    <string name="name_dcm">Наименование ДСМ</string>
+    <string name="count">Количество</string>
+    <string name="size">Объем (м3, тн, b)</string>
+    <string name="place">Место отбора</string>
+    <string name="provider">Поставщик</string>
+    <string name="typeWork">Для каких видов работ</string>
+    <string name="save">Сохранить</string>
+    <string name="saveAddNew">Сохранить и Добавить новую</string>
+    <string name="edit">Редактировать</string>
+    <string name="delete">Удалить</string>
+    <string name="editAddNew">Редактировать и Добавить новую</string>
+    <string name="fail_add_new_prob">Не удалось добавить новую пробу</string>
+    <string name="fail_edit_prob">Не удалось редакьтолвать новую пробу</string>
+    <string name="field_filds">Заполните все поля</string>
+    <string name="name_def">Название дефекта</string>
+    <string name="kilo_def">Киллометраж</string>
+    <string name="coment_def">Комментарий</string>
+    <string name="name_company">Название компании</string>
+    <string name="rang">Должность</string>
+    <string name="fio">ФИО</string>
+    <string name="erase">Стереть</string>
+    <string name="preference_file_key">settings</string>
+    <string name="title_activity_scan">ScanActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
