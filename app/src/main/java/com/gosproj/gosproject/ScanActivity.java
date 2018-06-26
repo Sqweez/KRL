@@ -23,11 +23,12 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import com.gosproj.gosproject.Adapters.GVPhotoAdapter;
+import com.gosproj.gosproject.Adapters.GVScanAdapter;
 import com.gosproj.gosproject.Functionals.DBHelper;
 import com.gosproj.gosproject.Functionals.NavigationDrawer;
 import com.gosproj.gosproject.Services.LoadScanService;
-import com.gosproj.gosproject.Services.LoadScansService;
 import com.gosproj.gosproject.Structures.Photo;
+import com.gosproj.gosproject.Structures.Scan;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,11 +41,12 @@ public class ScanActivity extends AppCompatActivity {
     Activity activity;
     Context context;
     GridView gridView;
-    GVPhotoAdapter adapter;
+    GVScanAdapter adapter;
     File fullPath = null;
     Uri imageUri;
-    int dataID;
-    ArrayList<Photo> scans = new ArrayList<Photo>();
+    int vyezdId;
+    int docType;
+    ArrayList<Scan> scans = new ArrayList<Scan>();
     FloatingActionButton fab;
     Menu menu;
     Button button;
@@ -70,14 +72,17 @@ public class ScanActivity extends AppCompatActivity {
         gridView = (GridView) findViewById(R.id.grid_view);
         DBHelper dbHelper = new DBHelper(context, DBHelper.Scans);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        dataID = Integer.parseInt(getIntent().getStringExtra("dataFromQr"));
-        Cursor cursor = db.rawQuery("SELECT * FROM " + DBHelper.Scans + " WHERE idDept = ?", new String[]{String.valueOf(dataID)});
+        String[] strings = getIntent().getStringArrayExtra("data");
+        vyezdId = Integer.parseInt(strings[0]);
+        docType = Integer.parseInt(strings[1]);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + DBHelper.Scans + " WHERE idVyezda = ?", new String[]{String.valueOf(vyezdId)});
         if (cursor.moveToFirst()) {
             do {
                 int id = cursor.getInt(cursor.getColumnIndex("id"));
-                int idDept = cursor.getInt(cursor.getColumnIndex("idDept"));
+                int idDept = cursor.getInt(cursor.getColumnIndex("idVyezda"));
+                int type_of_doc = cursor.getInt(cursor.getColumnIndex("docType"));
                 String path = cursor.getString(cursor.getColumnIndex("path"));
-                scans.add(new Photo(id, idDept, path));
+                scans.add(new Scan(id, idDept, path, type_of_doc));
             }
             while (cursor.moveToNext());
         }
@@ -87,12 +92,12 @@ public class ScanActivity extends AppCompatActivity {
         cursor.close();
         db.close();
         dbHelper.close();
-        adapter = new GVPhotoAdapter(activity, scans);
+        adapter = new GVScanAdapter(activity, scans);
         gridView.setAdapter(adapter);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activity.startService(new Intent(activity, LoadScanService.class).putExtra("id", dataID));
+                activity.startService(new Intent(activity, LoadScanService.class).putExtra("id", vyezdId));
                 Intent intent = new Intent(activity, MainActivity.class);
                 activity.startActivity(intent);
                 activity.finish();
@@ -155,7 +160,7 @@ public class ScanActivity extends AppCompatActivity {
     }
     public void removeElementsOk() {
 
-        ArrayList<Photo> removes = adapter.removeElements();
+        ArrayList<Scan> removes = adapter.removeElements();
         DBHelper dbHelper = new DBHelper(context, DBHelper.Scans);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
@@ -196,13 +201,13 @@ public class ScanActivity extends AppCompatActivity {
         DBHelper dbHelper = new DBHelper(context, DBHelper.Scans);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put("idDept", dataID);
+        cv.put("idVyezda", vyezdId);
         cv.put("path", fullPath.getPath().toString());
-
+        cv.put("docType", docType);
         long rowID = db.insert(dbHelper.getDatabaseName(), null, cv);
 
         if (rowID != 0) {
-            adapter.addPhoto(new Photo((int) rowID, dataID, fullPath.getPath().toString()));
+            adapter.addPhoto(new Scan((int) rowID, vyezdId, fullPath.getPath().toString(), docType ));
             button.setVisibility(View.VISIBLE);
             menu.findItem(R.id.action_remove).setVisible(true);
         } else {

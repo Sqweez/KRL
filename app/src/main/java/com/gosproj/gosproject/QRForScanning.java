@@ -58,8 +58,11 @@ public class QRForScanning extends AppCompatActivity {
                 finish();
             } else {
                 String dataFromQr = result.getContents();
+                String[] strings = dataFromQr.split("\\|");
+                Log.d("DEBUG_QR", strings[0]);
+                Log.d("DEBUG_QR", strings[1]);
                 Intent intent = new Intent(this, ScanActivity.class);
-                intent.putExtra("dataFromQr", dataFromQr);
+                intent.putExtra("data", strings);
                 startActivity(intent);
             }
         }

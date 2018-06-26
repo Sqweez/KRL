@@ -98,7 +98,8 @@ public class DBHelper extends SQLiteOpenHelper
             case "Scans":
                 db.execSQL("create table "+ DATABASE_NAME +" ("
                         + "id integer primary key autoincrement,"
-                        + "idDept integer,"
+                        + "idVyezda integer,"
+                        + "docType integer,"
                         + "path text"  + ");");
                 break;
             case "Videos":

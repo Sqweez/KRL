@@ -24,6 +24,7 @@ import com.gosproj.gosproject.Functionals.ServerApi;
 import com.gosproj.gosproject.MainActivity;
 import com.gosproj.gosproject.R;
 import com.gosproj.gosproject.Structures.Photo;
+import com.gosproj.gosproject.Structures.Scan;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -128,17 +129,18 @@ public class LoadScanService extends Service {
         this.stopSelf();
     }
     private String createScanFile(int id) {
-        ArrayList<Photo> scans = new ArrayList<Photo>();
+        ArrayList<Scan> scans = new ArrayList<Scan>();
         DBHelper dbHelper = new DBHelper(context, DBHelper.Scans);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + DBHelper.Scans + " WHERE idDept = ?", new String[]{String.valueOf(id)});
+        Cursor cursor = db.rawQuery("SELECT * FROM " + DBHelper.Scans + " WHERE idVyezda = ?", new String[]{String.valueOf(id)});
 
         if(cursor.moveToFirst()){
             do {
                 int ids = cursor.getInt(cursor.getColumnIndex("id"));
-                int idDept = cursor.getInt(cursor.getColumnIndex("idDept"));
+                int idDept = cursor.getInt(cursor.getColumnIndex("idVyezda"));
+                int docType = cursor.getInt(cursor.getColumnIndex("docType"));
                 String path = cursor.getString(cursor.getColumnIndex("path"));
-                scans.add(new Photo(ids, idDept, path));
+                scans.add(new Scan(ids, idDept, path, docType));
             }
             while (cursor.moveToNext());
         }
@@ -151,11 +153,12 @@ public class LoadScanService extends Service {
         try {
             for(int i = 0; i < scans.size(); i++){
                 JSONObject obj = new JSONObject();
-                obj.put("id_vyezda", scans.get(i).idDept);
+                obj.put("id", scans.get(i).idDept);
+                obj.put("type", scans.get(i).docType);
                 scan.put(obj);
                 String pathImg = "null";
                 File sdPath = Environment.getExternalStorageDirectory();
-                sdPath = new File(sdPath.getAbsolutePath() + "/Android/data/com.gosproj.gosproject/"+String.valueOf(id)+"/scans");
+                sdPath = new File(sdPath.getAbsolutePath() + "/Android/data/com.gosproj.gosproject/"+String.valueOf(id)+"/scans/images");
                 sdPath.mkdirs();
 
                 File scanImage = new File(scans.get(i).path);
@@ -258,7 +261,7 @@ public class LoadScanService extends Service {
             DBHelper dbHelper = new DBHelper(context, DBHelper.Scans);
             SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-            db.delete(DBHelper.Scans, "idDept = " + id, null);
+            db.delete(DBHelper.Scans, "idVyezda = " + id, null);
 
             dbHelper.close();
             db.close();
