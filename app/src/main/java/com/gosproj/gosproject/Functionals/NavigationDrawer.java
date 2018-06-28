@@ -64,7 +64,8 @@ public class NavigationDrawer {
 
         SharedPreferences sharedPref = context.getSharedPreferences(resources.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
 
-        PrimaryDrawerItem Main = new PrimaryDrawerItem().withIdentifier(2)
+        //TODO Вернуть позже
+        /*PrimaryDrawerItem Main = new PrimaryDrawerItem().withIdentifier(2)
                 .withName(resources.getString(R.string.active_task))
                 .withIcon(R.drawable.ic_list_bulleted)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -90,7 +91,7 @@ public class NavigationDrawer {
 
                         return true;
                     }
-                });
+                });*/
         PrimaryDrawerItem scanning = new PrimaryDrawerItem().withIdentifier(5)
                 .withName(resources.getString(R.string.scanning))
                 .withIcon(R.drawable.ic_file_download)
@@ -104,7 +105,8 @@ public class NavigationDrawer {
                         return true;
                     }
                 });
-        PrimaryDrawerItem synchronization = new PrimaryDrawerItem().withIdentifier(4)
+        // TODO Вернуть как будет готово
+        /*PrimaryDrawerItem synchronization = new PrimaryDrawerItem().withIdentifier(4)
                 .withName(resources.getString(R.string.synchronization))
                 .withIcon(R.drawable.ic_sync)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -121,7 +123,7 @@ public class NavigationDrawer {
                         return true;
                     }
                 });
-
+*/
         PrimaryDrawerItem exit = new PrimaryDrawerItem().withIdentifier(4)
                 .withName(resources.getString(R.string.exit))
                 .withIcon(R.drawable.ic_exit_to_app)
@@ -148,14 +150,17 @@ public class NavigationDrawer {
                 .withActivity(activity)
                 .withToolbar(toolbar)
                 .addDrawerItems(
-                        Main,
-                        newDeparture,
-                        synchronization,
+                        //TODO Вернуть позже
+                   /*     Main,
+                        newDeparture,*/
+                       // TODO Вернуть как будет готово
+                       /* synchronization,*/
                         scanning,
-                        exit,
-                        new DividerDrawerItem(),
+                        exit
+                        //TODO Остатки Синхронизации
+                        /*new DividerDrawerItem(),
                         new SecondaryDrawerItem().withName(resources.getString(R.string.last_time_sync) + ":").withSelectable(false),
-                        secondaryDrawerItem
+                        secondaryDrawerItem*/
                 )
                 .build();
     }

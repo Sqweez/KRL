@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.MediaActionSound;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -20,8 +23,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.Toast;
-
 import com.gosproj.gosproject.Adapters.GVPhotoAdapter;
 import com.gosproj.gosproject.Adapters.GVScanAdapter;
 import com.gosproj.gosproject.Functionals.DBHelper;
@@ -29,6 +32,7 @@ import com.gosproj.gosproject.Functionals.NavigationDrawer;
 import com.gosproj.gosproject.Services.LoadScanService;
 import com.gosproj.gosproject.Structures.Photo;
 import com.gosproj.gosproject.Structures.Scan;
+import me.pqpo.smartcropperlib.SmartCropper;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class ScanActivity extends AppCompatActivity {
+    static final String ACTION_SCAN = "com.example.action.DOC_SCAN";
     final int REQUEST_ADD_SCAN = 777;
     Activity activity;
     Context context;
@@ -46,6 +51,7 @@ public class ScanActivity extends AppCompatActivity {
     Uri imageUri;
     int vyezdId;
     int docType;
+    SmartCropper ivCrop;
     ArrayList<Scan> scans = new ArrayList<Scan>();
     FloatingActionButton fab;
     Menu menu;
@@ -68,6 +74,9 @@ public class ScanActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Сканирование");
         new NavigationDrawer(context, activity, toolbar);
         scans.clear();
+/*
+        ivCrop = (SmartCropper) findViewById(R.id.iv_crop);
+*/
         fab = (FloatingActionButton) findViewById(R.id.fab);
         gridView = (GridView) findViewById(R.id.grid_view);
         DBHelper dbHelper = new DBHelper(context, DBHelper.Scans);
@@ -106,7 +115,13 @@ public class ScanActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+//                //TODO Версия с фотографирование
+                    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                //TODO Версия со сканером
+/*
+                Intent takePictureIntent = new Intent(ACTION_SCAN);
+*/
 
                 if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
                     File photoFile = null;

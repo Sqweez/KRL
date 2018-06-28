@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -244,6 +245,21 @@ public class LoadScanService extends Service {
             }
         }
     }
+    private void addPath(String path)
+    {
+        Log.d("Offline", "ОФФЛАЙН");
+        DBHelper dbHelperOFF = new DBHelper(context, DBHelper.OfflineZip);
+        SQLiteDatabase dbOFF = dbHelperOFF.getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+
+        cv.put("path", path);
+
+        long rowID = dbOFF.insert(dbHelperOFF.getDatabaseName(), null, cv);
+
+        dbHelperOFF.close();
+        dbOFF.close();
+    }
 
     class SendZip extends AsyncTask<Void, Void, String>{
         String pathZip;
@@ -266,25 +282,36 @@ public class LoadScanService extends Service {
             dbHelper.close();
             db.close();
 
-            if(isOnline()){
-                try {
+            if (isOnline())
+            {
+                try
+                {
                     File file = new File(pathZip);
                     boolean result = new ServerApi().UpLoadFile(file);
-                    if(!result){
+
+                    if(!result)
+                    {
+                        addPath(pathZip);
                         Log.d("ARCHIVEEE", "NOT RESULT");
 
                     }
-                    else{
+                    else
+                    {
+                        file.delete();
                         Log.d("ARCHIVEEE", "RESULT");
 
                     }
+
                     Log.d("ARCHIVEEE", "FINISH");
+                }
+                catch (IOException e)
+                {
+                    addPath(pathZip);
 
-                }catch (IOException e){
-                    e.printStackTrace();
-
+                    Log.d("ARCHIVEEE", "START2");
                 }
             }
+
             return "";
         }
     }

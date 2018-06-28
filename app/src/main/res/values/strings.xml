@@ -40,7 +40,18 @@
     <string name="erase">Стереть</string>
     <string name="preference_file_key">settings</string>
     <string name="title_activity_scan">ScanActivity</string>
+    <string name="title_activity_document_scanner">Сканер документов</string>
+    <string name="scanningToast">Поиск документа\nНажмите еще раз, чтобы сфотографировать все</string>
+    <string name="colorMode">Настройка цвета</string>
+    <string name="bwMode"><![CDATA[B&W mode]]></string>
+    <string name="autoMode">Автоматический режим</string>
+    <string name="manualMode">Ручной режим</string>
+    <string name="filterModeOn">Улучшение изображения включено</string>
+    <string name="filterModeOff">Улучшение изображения включено</string>
+    <string name="scanActivity">Отсканированные документы</string>
+    <string name="scanButton">Загрузить документы</string>
+    <string name="ok">OK</string>
+    <string name="bscan"> </string>
+    <string name="bdoc"> </string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
