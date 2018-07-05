@@ -3,6 +3,7 @@ package com.gosproj.gosproject.Services;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.telephony.TelephonyManager;
 import android.app.Service;
 import android.content.ContentValues;
 import android.content.Context;
@@ -31,10 +32,12 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -53,6 +56,7 @@ public class LoadScanService extends Service {
     Context context;
     int id;
     NotificationManager nm;
+
     public LoadScanService() {
         super();
     }
@@ -67,7 +71,7 @@ public class LoadScanService extends Service {
 
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(LOG_TAG, "onStartCommand");
-        id = intent.getIntExtra("id", 0);
+        id = Integer.parseInt(intent.getStringExtra("id"));
         someTask();
         return super.onStartCommand(intent, flags, startId);
     }
@@ -82,7 +86,7 @@ public class LoadScanService extends Service {
         return null;
     }
 
-    String onClose(){
+    String onClose() {
         String scanFile = createScanFile(id);
 
         File sdPath = Environment.getExternalStorageDirectory();
@@ -90,16 +94,16 @@ public class LoadScanService extends Service {
         sdPath.mkdir();
 
         File rootFolder = Environment.getExternalStorageDirectory();
-        rootFolder = new File(rootFolder.getAbsolutePath() + "/Android/data/com.gosproj.gosproject/"+String.valueOf(id) + "/scans");
+        rootFolder = new File(rootFolder.getAbsolutePath() + "/Android/data/com.gosproj.gosproject/" + String.valueOf(id) + "/scans");
         rootFolder.mkdirs();
 
         String token = getToken(3);
 
-        rootFolder.renameTo(new File(rootFolder.getAbsolutePath() + "/Android/data/com.gosproj.gosproject/"+token));
+        rootFolder.renameTo(new File(rootFolder.getAbsolutePath() + "/Android/data/com.gosproj.gosproject/" + token));
         try {
             DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
             String date = df.format(Calendar.getInstance().getTime());
-            String pathZip = sdPath.getAbsolutePath()+ "/"+String.valueOf(id)+"-"+date+"-"+token+".zip";
+            String pathZip = sdPath.getAbsolutePath() + "/" + String.valueOf(id) + "-" + date + "-" + token + ".zip";
             ZipFile zipFile = new ZipFile(pathZip);
             Log.d("MYLOGAWESOME", "KEKS " + zipFile);
             ZipParameters parameters = new ZipParameters();
@@ -120,22 +124,23 @@ public class LoadScanService extends Service {
             deleteRecursive(rootFolder);
 
             return pathZip;
-        }
-        catch (ZipException e){
+        } catch (ZipException e) {
             e.printStackTrace();
             return "";
         }
     }
-    public void stopService(){
+
+    public void stopService() {
         this.stopSelf();
     }
+
     private String createScanFile(int id) {
         ArrayList<Scan> scans = new ArrayList<Scan>();
         DBHelper dbHelper = new DBHelper(context, DBHelper.Scans);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + DBHelper.Scans + " WHERE idVyezda = ?", new String[]{String.valueOf(id)});
 
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             do {
                 int ids = cursor.getInt(cursor.getColumnIndex("id"));
                 int idDept = cursor.getInt(cursor.getColumnIndex("idVyezda"));
@@ -148,51 +153,61 @@ public class LoadScanService extends Service {
         cursor.close();
         db.close();
         dbHelper.close();
-
+        //TODO Попытка поместить номер телефона
         JSONArray scan = new JSONArray();
+        JSONObject obj = new JSONObject();
 
         try {
-            for(int i = 0; i < scans.size(); i++){
-                JSONObject obj = new JSONObject();
-                obj.put("id", scans.get(i).idDept);
-                obj.put("type", scans.get(i).docType);
-                scan.put(obj);
-                String pathImg = "null";
-                File sdPath = Environment.getExternalStorageDirectory();
-                sdPath = new File(sdPath.getAbsolutePath() + "/Android/data/com.gosproj.gosproject/"+String.valueOf(id)+"/scans/images");
-                sdPath.mkdirs();
-
-                File scanImage = new File(scans.get(i).path);
-
-                try {
-                    FileUtils.copyFileToDirectory(scanImage, sdPath);
-                }
-                catch (IOException e){
-                    e.printStackTrace();
-                    break;
-                }
-            }
-
-        }catch (JSONException e){
+            obj.put("id", scans.get(0).idDept);
+            obj.put("type", scans.get(0).docType);
+            scan.put(obj);
+        } catch (JSONException e) {
             e.printStackTrace();
-            return "";
+        }
+        for (int i = 0; i < scans.size(); i++) {
+            String pathImg = "null";
+            File sdPath = Environment.getExternalStorageDirectory();
+            sdPath = new File(sdPath.getAbsolutePath() + "/Android/data/com.gosproj.gosproject/" + String.valueOf(id) + "/scans/images");
+            sdPath.mkdirs();
+
+            File scanImage = new File(scans.get(i).path);
+
+            try {
+                FileUtils.copyFileToDirectory(scanImage, sdPath);
+            } catch (IOException e) {
+                e.printStackTrace();
+                break;
+            }
         }
         File sdPath = Environment.getExternalStorageDirectory();
-        sdPath = new File(sdPath.getAbsolutePath() + "/Android/data/com.gosproj.gosproject/"+String.valueOf(id)+"/scans");
-        if(!scan.toString().equals("")){
-           File sdFile = new File(sdPath, "info_scans.ini");
+        sdPath = new File(sdPath.getAbsolutePath() + "/Android/data/com.gosproj.gosproject/" + String.valueOf(id) + "/scans");
+        if (!scan.toString().equals("")) {
+            File sdFile = new File(sdPath, "info_scans.ini");
 
-           try {
-               BufferedWriter bw = new BufferedWriter(new FileWriter(sdFile));
-               bw.write(scan.toString());
-               bw.close();
-           }catch (IOException e){
-               e.printStackTrace();
-               return "";
-           }
+            try {
+                BufferedWriter bw = new BufferedWriter(new FileWriter(sdFile));
+                bw.write(scan.toString());
+                bw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "";
+            }
+        }
+        if (!scan.toString().equals("")) {
+            File sdFile = new File(sdPath, "info_scans.ini");
+
+            try {
+                BufferedWriter bw = new BufferedWriter(new FileWriter(sdFile));
+                bw.write(scan.toString());
+                bw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "";
+            }
         }
         return sdPath.getAbsolutePath();
     }
+
     public void deleteRecursive(File fileOrDirectory) {
 
         if (fileOrDirectory.isDirectory()) {
@@ -203,6 +218,7 @@ public class LoadScanService extends Service {
 
         fileOrDirectory.delete();
     }
+
     void someTask() {
         Log.d("ARCHIVEEE", "START");
 
@@ -210,12 +226,11 @@ public class LoadScanService extends Service {
         createArhive.execute();
 
     }
-    class CreateArhive extends AsyncTask<Void, Void, String>
-    {
+
+    class CreateArhive extends AsyncTask<Void, Void, String> {
         Context context;
 
-        public CreateArhive(Context context)
-        {
+        public CreateArhive(Context context) {
             this.context = context;
 
             sendNotif("Сбор документов");
@@ -232,21 +247,17 @@ public class LoadScanService extends Service {
         }
 
         @Override
-        protected void onPostExecute(String unused)
-        {
-            if (unused.equals(""))
-            {
+        protected void onPostExecute(String unused) {
+            if (unused.equals("")) {
 
-            }
-            else
-            {
+            } else {
                 SendZip sendZip = new SendZip(unused);
                 sendZip.execute();
             }
         }
     }
-    private void addPath(String path)
-    {
+
+    private void addPath(String path) {
         Log.d("Offline", "ОФФЛАЙН");
         DBHelper dbHelperOFF = new DBHelper(context, DBHelper.OfflineZip);
         SQLiteDatabase dbOFF = dbHelperOFF.getWritableDatabase();
@@ -261,17 +272,20 @@ public class LoadScanService extends Service {
         dbOFF.close();
     }
 
-    class SendZip extends AsyncTask<Void, Void, String>{
+    class SendZip extends AsyncTask<Void, Void, String> {
         String pathZip;
-        public SendZip(String pathZip){
+
+        public SendZip(String pathZip) {
             this.pathZip = pathZip;
             sendNotif("Отправка данных на сервер");
         }
+
         @Override
-        protected void onPostExecute(String unused){
+        protected void onPostExecute(String unused) {
             stopService();
             nm.cancel(200);
         }
+
         @Override
         protected String doInBackground(Void... voids) {
             DBHelper dbHelper = new DBHelper(context, DBHelper.Scans);
@@ -282,30 +296,23 @@ public class LoadScanService extends Service {
             dbHelper.close();
             db.close();
 
-            if (isOnline())
-            {
-                try
-                {
+            if (isOnline()) {
+                try {
                     File file = new File(pathZip);
                     boolean result = new ServerApi().UpLoadFile(file);
 
-                    if(!result)
-                    {
+                    if (!result) {
                         addPath(pathZip);
                         Log.d("ARCHIVEEE", "NOT RESULT");
 
-                    }
-                    else
-                    {
+                    } else {
                         file.delete();
                         Log.d("ARCHIVEEE", "RESULT");
 
                     }
 
                     Log.d("ARCHIVEEE", "FINISH");
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     addPath(pathZip);
 
                     Log.d("ARCHIVEEE", "START2");
@@ -316,8 +323,7 @@ public class LoadScanService extends Service {
         }
     }
 
-    public boolean isOnline()
-    {
+    public boolean isOnline() {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();

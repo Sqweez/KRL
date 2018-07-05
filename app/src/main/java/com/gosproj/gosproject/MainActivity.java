@@ -1,20 +1,29 @@
 package com.gosproj.gosproject;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Debug;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
+import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.gosproj.gosproject.Adapters.RVMainAdapter;
 import com.gosproj.gosproject.Functionals.DBHelper;
@@ -32,22 +41,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity
-{
+public class MainActivity extends AppCompatActivity {
     Activity activity;
     Context context;
     Resources resources;
-
     Toolbar toolbar;
-
     RecyclerView recyclerView;
     RVMainAdapter rvMainAdapter;
 
     ArrayList<MainCategory> mainCategories = new ArrayList<MainCategory>();
-
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -63,12 +67,17 @@ public class MainActivity extends AppCompatActivity
                         Manifest.permission.ACCESS_NETWORK_STATE,
                         Manifest.permission.INTERNET,
                         Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.ACCESS_FINE_LOCATION
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.READ_PHONE_STATE
                 ).withListener(new MultiplePermissionsListener() {
-            @Override public void onPermissionsChecked(MultiplePermissionsReport report) {}
-            @Override public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {}
-        }).check();
+            @Override
+            public void onPermissionsChecked(MultiplePermissionsReport report) {
+            }
 
+            @Override
+            public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+            }
+        }).check();
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(resources.getString(R.string.app_name));
@@ -82,7 +91,6 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setLayoutManager(llm);
         recyclerView.setAdapter(rvMainAdapter);
     }
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -93,7 +101,6 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         Log.d("EVENTSSS", "MainActivity: onResume()");
-
         mainCategories.clear();
 
         DBHelper dbHelper = new DBHelper(context, DBHelper.DEPARTURE);

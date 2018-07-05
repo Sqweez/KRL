@@ -1,10 +1,13 @@
+/*
 package com.gosproj.gosproject.Functionals;
 
 import org.opencv.core.Mat;
 
+*/
 /**
  * Created by ANIRUDDHA.
- */
+ *//*
+
 public class PreviewFrame {
 
     private final boolean previewOnly;
@@ -37,3 +40,4 @@ public class PreviewFrame {
         this.autoMode = autoMode;
     }
 }
+*/

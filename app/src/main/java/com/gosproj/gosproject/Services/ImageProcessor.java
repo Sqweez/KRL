@@ -1,3 +1,4 @@
+/*
 package com.gosproj.gosproject.Services;
 
 import android.content.SharedPreferences;
@@ -385,7 +386,8 @@ public class ImageProcessor extends Handler {
         }
     }
 
-    /**
+    */
+/**
      * When a pixel have any of its three elements above the threshold
      * value and the average of the three values are less than 80% of the
      * higher one, brings all three values to the max possible keeping
@@ -396,7 +398,8 @@ public class ImageProcessor extends Handler {
      *
      * @param src
      * @param threshold
-     */
+     *//*
+
     private void colorThresh(Mat src, int threshold) {
         Size srcSize = src.size();
         int size = (int) (srcSize.height * srcSize.width)*3;
@@ -551,3 +554,4 @@ public class ImageProcessor extends Handler {
     }
 }
 
+*/

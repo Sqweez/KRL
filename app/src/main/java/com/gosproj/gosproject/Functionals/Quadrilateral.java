@@ -1,11 +1,14 @@
+/*
 package com.gosproj.gosproject.Functionals;
 
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 
+*/
 /**
  * Created by ANIRUDDHA.
- */
+ *//*
+
 public class Quadrilateral {
     public MatOfPoint contour;
     public Point[] points;
@@ -16,3 +19,4 @@ public class Quadrilateral {
     }
 }
 
+*/

@@ -53,5 +53,8 @@
     <string name="ok">OK</string>
     <string name="bscan"> </string>
     <string name="bdoc"> </string>
-
+    <string name="cancel">Отмена</string>
+    <string name="makeBW">Сделать ЧБ</string>
+    <string name="makeOrig">Оригинал</string>
+    <string name="confirmLoadScan">Вы отсканировали все акты и хотите их загрузить?</string>
 </resources>

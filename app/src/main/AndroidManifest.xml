@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -101,7 +102,13 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".CropActivity"></activity>
+        <activity android:name=".CropActivity">
+            <intent-filter>
+                <action android:name="com.example.action.DOC_CROP" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

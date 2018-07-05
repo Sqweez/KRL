@@ -1,3 +1,4 @@
+/*
 package com.gosproj.gosproject;
 
 import android.Manifest;
@@ -87,10 +88,12 @@ public class DocumentScannerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SurfaceHolder.Callback,
         Camera.PictureCallback, Camera.PreviewCallback {
 
-    /**
+    */
+/**
      * Some older devices needs a small delay between UI widget updates
      * and a change of the status and navigation bar.
-     */
+     *//*
+
     private static final int UI_ANIMATION_DELAY = 300;
 
     private static final int CREATE_PERMISSIONS_REQUEST_CAMERA = 1;
@@ -130,20 +133,24 @@ public class DocumentScannerActivity extends AppCompatActivity
         @Override
         public void run() {
             // Delayed display of UI elements
-            /*ActionBar actionBar = getActionBar();
+            */
+/*ActionBar actionBar = getActionBar();
             if (actionBar != null) {
                 actionBar.show();
             }
-            mControlsView.setVisibility(View.VISIBLE);*/
+            mControlsView.setVisibility(View.VISIBLE);*//*
+
         }
     };
     private boolean mVisible;
     private final Runnable mHideRunnable = new Runnable() {
         @Override
         public void run() {
+*/
 /*
             hide();
-*/
+*//*
+
         }
     };
 
@@ -218,12 +225,14 @@ public class DocumentScannerActivity extends AppCompatActivity
             }
             mControlsView = findViewById(R.id.fullscreen_content_controls);
             // Set up the user interaction to manually show or hide the system UI.
-            /*mContentView.setOnClickListener(new View.OnClickListener() {
+            */
+/*mContentView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     toggle();
                 }
-            });*/
+            });*//*
+
 
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -341,9 +350,11 @@ public class DocumentScannerActivity extends AppCompatActivity
 
         } catch (Exception e) {
             Dialog d = new Dialog(this);
+*/
 /*
             d.setTitle(R.string.error_dsa);
-*/
+*//*
+
             TextView tv = new TextView(this);
             tv.setText(e.toString());
             d.setContentView(tv);
@@ -431,7 +442,9 @@ public class DocumentScannerActivity extends AppCompatActivity
 
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls are available.
-       /* delayedHide(100);*/
+       */
+/* delayedHide(100);*//*
+
     }
 
     private void toggle() {
@@ -443,7 +456,8 @@ public class DocumentScannerActivity extends AppCompatActivity
     }
 
     private void hide() {
-      /*  // Hide UI first
+      */
+/*  // Hide UI first
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
             actionBar.hide();
@@ -455,11 +469,18 @@ public class DocumentScannerActivity extends AppCompatActivity
 
         // Schedule a runnable to remove the status and navigation bar after a delay
 *//*
+*/
+/*
         mHideHandler.removeCallbacks(mShowPart2Runnable);
 *//*
-*//*
-        mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
 */
+/*
+*//*
+*/
+/*
+        mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
+*//*
+
     }
 
     @SuppressLint("InlinedApi")
@@ -467,17 +488,23 @@ public class DocumentScannerActivity extends AppCompatActivity
         mVisible = true;
 
         // Schedule a runnable to display UI elements after a delay
-       /* mHideHandler.removeCallbacks(mHidePart2Runnable);
-        mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);*/
+       */
+/* mHideHandler.removeCallbacks(mHidePart2Runnable);
+        mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);*//*
+
     }
 
-    /**
+    */
+/**
      * Schedules a call to hide() in [delay] milliseconds,
      * canceling any previously scheduled calls.
-     */
+     *//*
+
     private void delayedHide(int delayMillis) {
-      /*  mHideHandler.removeCallbacks(mHideRunnable);
-        mHideHandler.postDelayed(mHideRunnable, delayMillis);*/
+      */
+/*  mHideHandler.removeCallbacks(mHideRunnable);
+        mHideHandler.postDelayed(mHideRunnable, delayMillis);*//*
+
     }
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -973,9 +1000,11 @@ public class DocumentScannerActivity extends AppCompatActivity
             }
 
             // Record goal "PictureTaken"
+*/
 /*
             DocumentScannerApplication.getInstance().trackEvent("Event", "Picture Taken", "Document Scanner Activity");
-*/
+*//*
+
 
             refreshCamera();
         } else {
@@ -1130,4 +1159,4 @@ public class DocumentScannerActivity extends AppCompatActivity
 
 
 
-}
+}*/

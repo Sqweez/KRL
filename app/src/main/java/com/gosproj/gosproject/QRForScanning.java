@@ -61,6 +61,7 @@ public class QRForScanning extends AppCompatActivity {
                 String[] strings = dataFromQr.split("\\|");
                 Log.d("DEBUG_QR", strings[0]);
                 Log.d("DEBUG_QR", strings[1]);
+                Log.d("DEBUG_QR", strings[2]);
                 Intent intent = new Intent(this, ScanActivity.class);
                 intent.putExtra("data", strings);
                 startActivity(intent);

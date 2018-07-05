@@ -1,12 +1,15 @@
+/*
 package com.gosproj.gosproject.Functionals;
 
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Size;
 
+*/
 /**
  * Created by ANIRUDDHA.
- */
+ *//*
+
 public class ScannedDocument {
 
     public Mat original;
@@ -41,3 +44,4 @@ public class ScannedDocument {
         }
     }
 }
+*/

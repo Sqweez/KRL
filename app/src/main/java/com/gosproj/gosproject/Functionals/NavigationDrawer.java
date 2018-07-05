@@ -94,7 +94,7 @@ public class NavigationDrawer {
                 });*/
         PrimaryDrawerItem scanning = new PrimaryDrawerItem().withIdentifier(5)
                 .withName(resources.getString(R.string.scanning))
-                .withIcon(R.drawable.ic_file_download)
+                .withIcon(R.drawable.ic_file_upload_black_24dp)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
