@@ -34,6 +34,7 @@ public class PaintView extends View
 
     public PaintView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        paint.setAlpha(0);
         paint.setAntiAlias(true);
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);

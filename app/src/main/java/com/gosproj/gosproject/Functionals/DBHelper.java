@@ -21,6 +21,7 @@ public class DBHelper extends SQLiteOpenHelper
     public static String Scans = "Scans";
     public static String Videos = "Videos";
     public static String OfflineZip = "OfflineZip";
+    public static String Users = "Users";
 
     public DBHelper(Context context, String name)
     {
@@ -35,6 +36,14 @@ public class DBHelper extends SQLiteOpenHelper
     {
         switch (DATABASE_NAME)
         {
+            case "Users":
+                db.execSQL("create table "+ DATABASE_NAME +" ("
+                        + "id integer primary key autoincrement,"
+                        + "site_id integer,"
+                        + "name text,"
+                        + "rgu_name text,"
+                        + "rgu_id integer"+ ");");
+                break;
             case "Departures":
                 db.execSQL("create table "+ DATABASE_NAME +" ("
                         + "id integer primary key autoincrement,"

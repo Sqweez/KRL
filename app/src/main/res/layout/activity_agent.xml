@@ -36,12 +36,22 @@
                 android:layout_height="wrap_content"
                 android:gravity="center">
 
-                <com.gosproj.gosproject.Views.PaintView
+                <com.github.gcacace.signaturepad.views.SignaturePad
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/paint"
+                    android:layout_width="320dp"
+                    android:layout_height="200dp"
+                    app:penMaxWidth="4dp"
+                    app:penMinWidth="1.5dp"
+                    app:penColor="@android:color/black"
+                    />
+                <!--<com.gosproj.gosproject.Views.PaintView
                     android:layout_width="320dp"
                     android:layout_height="200dp"
                     android:id="@+id/paint"
-                    android:background="#fff"
-                    android:layout_gravity="center" />
+                    android:background="@color/transparent"
+                    android:layout_gravity="center" />-->
 
                 <View
                     android:layout_width="wrap_content"

@@ -9,6 +9,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.widget.NestedScrollView;
@@ -25,6 +27,7 @@ import android.widget.RadioButton;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.github.gcacace.signaturepad.views.SignaturePad;
 import com.gosproj.gosproject.Functionals.DBHelper;
 import com.gosproj.gosproject.Structures.Agent;
 import com.gosproj.gosproject.Structures.Defects;
@@ -41,7 +44,7 @@ public class AgentActivity extends AppCompatActivity
     Resources resources;
 
     Toolbar toolbar;
-
+    SignaturePad mSignPad;
     PaintView paintView;
 
     TextInputLayout nameCompany;
@@ -75,10 +78,9 @@ public class AgentActivity extends AppCompatActivity
         activity = this;
         context = this;
         resources = getResources();
-
         DBHelper dbHelper = new DBHelper(context, DBHelper.DEPARTURE);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-
+        mSignPad = (SignaturePad) findViewById(R.id.paint);
         Cursor cursor = db.rawQuery("SELECT podradchyk, customer FROM Departures WHERE id = ?", new String[]{String.valueOf(id)});
 
         if (cursor.moveToFirst())
@@ -105,7 +107,9 @@ public class AgentActivity extends AppCompatActivity
 
         erase = (LinearLayout) findViewById(R.id.buttonErase);
 
+/*
         paintView = (PaintView) findViewById(R.id.paint);
+*/
 
         provider = (RadioButton) findViewById(R.id.provider);
         customer = (RadioButton) findViewById(R.id.customer);
@@ -113,7 +117,9 @@ public class AgentActivity extends AppCompatActivity
 
         save = (Button) findViewById(R.id.save);
 
+/*
         nestedScrollView = (CustomScrollView) findViewById(R.id.neasted);
+*/
 
         provider.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -146,8 +152,6 @@ public class AgentActivity extends AppCompatActivity
         });
 
         provider.setChecked(true);
-        paintView.scrollView = nestedScrollView;
-
         if (agent != null)
         {
             Bitmap bmp = BitmapFactory.decodeByteArray(agent.blob, 0, agent.blob.length);
@@ -167,7 +171,7 @@ public class AgentActivity extends AppCompatActivity
         erase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                paintView.clear();
+                mSignPad.clear();
             }
         });
 
@@ -178,7 +182,22 @@ public class AgentActivity extends AppCompatActivity
             }
         });
     }
+    public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
 
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(
+                bm, 0, 0, width, height, matrix, false);
+        bm.recycle();
+        return resizedBitmap;
+    }
     private boolean checkFields()
     {
         boolean isT = false;
@@ -249,9 +268,8 @@ public class AgentActivity extends AppCompatActivity
 
         DBHelper dbHelper = new DBHelper(getApplicationContext(), DBHelper.Agents);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-        Bitmap bm = paintView.getBitmap(paintView.getWidth(), paintView.getHeight());
-
+        Bitmap bm = mSignPad.getTransparentSignatureBitmap();
+        bm = getResizedBitmap(bm, 320, 240);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         bm.compress(Bitmap.CompressFormat.PNG, 100, out);
         byte[] buffer = out.toByteArray();
@@ -289,7 +307,6 @@ public class AgentActivity extends AppCompatActivity
 
         return result;
     }
-
     private boolean save()
     {
         boolean result = false;
@@ -303,9 +320,8 @@ public class AgentActivity extends AppCompatActivity
         cv.put("nameCompany", nameCompany.getEditText().getText().toString());
         cv.put("fio", fio.getEditText().getText().toString());
         cv.put("rang", rang.getEditText().getText().toString());
-
-        Bitmap bm = paintView.getBitmap(paintView.getWidth(), paintView.getHeight());
-
+        Bitmap bm = mSignPad.getTransparentSignatureBitmap();
+        bm = getResizedBitmap(bm, 320, 240);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         bm.compress(Bitmap.CompressFormat.PNG, 100, out);
         byte[] buffer = out.toByteArray();

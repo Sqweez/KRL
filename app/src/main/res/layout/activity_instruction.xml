@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.gosproj.gosproject.InstructionActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentTop="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/instruction_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textAlignment="center"
+                android:textSize="27sp"
+                android:textStyle="bold"
+                android:text="@string/instr_title" />
+
+            <TextView
+                android:id="@+id/instruction_step1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:layout_marginLeft="20dp"
+                android:text="@string/instr_step1" />
+
+            <ImageView
+                android:id="@+id/instruction_step1_img"
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="169dp"
+                app:srcCompat="@drawable/screenshot_1" />
+            <TextView
+                android:id="@+id/instruction_step2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="20dp"
+                android:text="@string/instr_step2" />
+            <ImageView
+                android:id="@+id/instruction_step2_img"
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="169dp"
+                app:srcCompat="@drawable/screenshot_2" />
+
+            <Button
+                android:id="@+id/btnConfirmInstruction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/colorPrimaryDark"
+                android:text="@string/continueText" />
+            <Button
+                android:id="@+id/btnExit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/colorPrimaryDark"
+                android:text="@string/exit" />
+        </LinearLayout>
+
+    </ScrollView>
+
+</RelativeLayout>
