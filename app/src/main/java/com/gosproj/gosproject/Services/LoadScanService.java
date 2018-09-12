@@ -55,6 +55,7 @@ public class LoadScanService extends Service {
     final String LOG_TAG = "myLogs";
     Context context;
     int id;
+    String rgu_id;
     NotificationManager nm;
 
     public LoadScanService() {
@@ -146,7 +147,8 @@ public class LoadScanService extends Service {
                 int idDept = cursor.getInt(cursor.getColumnIndex("idVyezda"));
                 int docType = cursor.getInt(cursor.getColumnIndex("docType"));
                 String path = cursor.getString(cursor.getColumnIndex("path"));
-                scans.add(new Scan(ids, idDept, path, docType));
+                int rgu_id = cursor.getInt(cursor.getColumnIndex("rgu_id"));
+                scans.add(new Scan(ids, idDept, path, docType, rgu_id));
             }
             while (cursor.moveToNext());
         }
@@ -159,6 +161,7 @@ public class LoadScanService extends Service {
 
         try {
             obj.put("id", scans.get(0).idDept);
+            obj.put("rgu_id", scans.get(0).rgu_id);
             obj.put("type", scans.get(0).docType);
             scan.put(obj);
         } catch (JSONException e) {

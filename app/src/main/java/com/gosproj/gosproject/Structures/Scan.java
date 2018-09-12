@@ -9,10 +9,12 @@ public class Scan implements Parcelable
     public int idDept;
     public String path;
     public int docType;
+    public int rgu_id;
 
-    public Scan(int id, int idDept, String path, int docType)
+    public Scan(int id, int idDept, String path, int docType, int rgu_id)
     {
         this.id = id;
+        this.rgu_id = rgu_id;
         this.idDept = idDept;
         this.path = path;
         this.docType = docType;
@@ -23,6 +25,7 @@ public class Scan implements Parcelable
         idDept = in.readInt();
         docType =  in.readInt();
         path = in.readString();
+        rgu_id = in.readInt();
     }
 
     public static final Creator<Scan> CREATOR = new Creator<Scan>() {
@@ -45,6 +48,7 @@ public class Scan implements Parcelable
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
+        dest.writeInt(rgu_id);
         dest.writeInt(idDept);
         dest.writeInt(docType);
         dest.writeString(path);

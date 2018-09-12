@@ -4,15 +4,21 @@ public class Act
 {
     public int id;
     public int idAct;
+    public int idNomer;
     public String date;
-    public String doroga;
-    public String uchastok;
+    public String object;
     public String vid_rabot;
-    public String rgu;
     public String ispolnitel;
-    public String gruppa_vyezda;
+    public String gruppa_vyezda1;
+    public String gruppa_vyezda2;
+    public String gruppa_vyezda3;
     public String podradchyk;
-    public String customer;
+    public String zakazchik;
+    public String subpodradchyk;
+    public String avt_nadzor;
+    public String inj_sluzhby;
+    public String uorg;
+    public String rgu;
 
     public Act()
     {

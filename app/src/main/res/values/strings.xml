@@ -18,7 +18,7 @@
     <string name="act_number">Акт номер</string>
     <string name="qr_scan_fail">Не удалось считать QR-код</string>
     <string name="qr_scan_error">Отсканирован некорректный QR-код</string>
-    <string name="act">Акт</string>
+    <string name="act">Акт выполненных работ</string>
     <string name="exit">Выход</string>
     <string name="logout">Смена пользователя</string>
     <string name="name_dcm">Наименование ДСМ</string>
@@ -62,8 +62,9 @@
     <string name="makeOrig">Оригинал</string>
     <string name="confirmLoadScan">Вы отсканировали все акты и хотите их загрузить?</string>
     <string name="title_activity_qrauth">QRAuth</string>
-    <string name="instr_step1">1.Перейдите на сайт KazRoadLab. Войдите под своей учетной записью, после чего перейдите в свой личный кабинет</string>
-    <string name="instr_step2">2.Отсканируйте QR-код, который вы увидите в своем профиле</string>
+    <string name="instr_step1">1.На сайте KazRoadLab, после авторизации, в пользовательском меню необходимо выбрать пункт "Моя страница".</string>
+    <string name="instr_step2">2.В открывшемся окне отсканировать QR-код. Сканер откроется после нажатия кнопки "Продолжить" в конце этой инструкции.</string>
     <string name="continueText">Продолжить</string>
     <string name="instr_title">Инструкция по авторизации</string>
+    <string name="title_activity_measurment">MeasurmentActivity</string>
 </resources>

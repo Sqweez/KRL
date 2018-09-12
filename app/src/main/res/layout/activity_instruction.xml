@@ -10,8 +10,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentStart="false"
-        android:layout_alignParentTop="false">
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -23,38 +23,40 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:text="@string/instr_title"
                 android:textAlignment="center"
                 android:textSize="27sp"
-                android:textStyle="bold"
-                android:text="@string/instr_title" />
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/instruction_step1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
                 android:layout_marginLeft="20dp"
-                android:text="@string/instr_step1" />
+                android:text="@string/instr_step1"
+                android:textSize="18sp" />
 
             <ImageView
                 android:id="@+id/instruction_step1_img"
-                android:layout_marginTop="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="169dp"
+                android:layout_marginTop="20dp"
                 app:srcCompat="@drawable/screenshot_1" />
+
             <TextView
                 android:id="@+id/instruction_step2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:layout_marginTop="5dp"
                 android:layout_marginLeft="20dp"
-                android:text="@string/instr_step2" />
+                android:layout_marginTop="5dp"
+                android:text="@string/instr_step2"
+                android:textSize="18sp" />
+
             <ImageView
                 android:id="@+id/instruction_step2_img"
-                android:layout_marginTop="20dp"
                 android:layout_width="match_parent"
-                android:layout_height="169dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="20dp"
                 app:srcCompat="@drawable/screenshot_2" />
 
             <Button
@@ -62,21 +64,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:layout_marginTop="20dp"
-                android:layout_marginRight="30dp"
-                android:layout_marginLeft="30dp"
                 android:layout_marginBottom="10dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginTop="20dp"
                 android:background="@color/colorPrimaryDark"
                 android:text="@string/continueText" />
+
             <Button
                 android:id="@+id/btnExit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="30dp"
-                android:layout_marginLeft="30dp"
                 android:layout_marginBottom="10dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginTop="10dp"
                 android:background="@color/colorPrimaryDark"
                 android:text="@string/exit" />
         </LinearLayout>

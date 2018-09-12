@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         activity = this;
         context = this;
         resources = getResources();
-
+        DBHelper db = new DBHelper(this, DBHelper.VidRabot);
         Dexter.withActivity(this)
                 .withPermissions(
                         Manifest.permission.CAMERA,
@@ -105,26 +105,6 @@ public class MainActivity extends AppCompatActivity {
         Log.d("EVENTSSS", "MainActivity: onStart()");
     }
 
-    /*@Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            String[] strings = data.getStringArrayExtra("data");
-            String name = strings[0];
-            int site_id = Integer.parseInt(strings[1]);
-            int rgu_id = Integer.parseInt(strings[2]);
-            String rgu_name = strings[3];
-            ContentValues cv = new ContentValues();
-            cv.put("site_id", site_id);
-            cv.put("name", name);
-            cv.put("rgu_name", rgu_name);
-            cv.put("rgu_id", rgu_id);
-            DBHelper dbHelper = new DBHelper(context, DBHelper.Users);
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
-            long rowID = db.insert(dbHelper.getDatabaseName(), null, cv);
-            dbHelper.close();
-            db.close();
-        }
-    }*/
 
     private void makeAuth() {
         DBHelper dbHelper = new DBHelper(context, DBHelper.Users);
@@ -155,17 +135,16 @@ public class MainActivity extends AppCompatActivity {
         DBHelper dbHelper = new DBHelper(context, DBHelper.DEPARTURE);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT id, date, doroga, uchastok, vid_rabot FROM Departures WHERE isClose = 0", null);
+        Cursor cursor = db.rawQuery("SELECT id, date, object, vid_rabot FROM Departures WHERE isClose = 0", null);
 
         if (cursor.moveToFirst()) {
             do {
                 int id = cursor.getInt(cursor.getColumnIndex("id"));
                 String date = cursor.getString(cursor.getColumnIndex("date"));
-                String doroga = cursor.getString(cursor.getColumnIndex("doroga"));
-                String uchastok = cursor.getString(cursor.getColumnIndex("uchastok"));
+                String object = cursor.getString(cursor.getColumnIndex("object"));
                 String vid_rabot = cursor.getString(cursor.getColumnIndex("vid_rabot"));
 
-                String name = doroga + "\n" + uchastok + ", " + vid_rabot;
+                String name = object + "\n" + vid_rabot;
 
                 boolean isSearch = false;
 

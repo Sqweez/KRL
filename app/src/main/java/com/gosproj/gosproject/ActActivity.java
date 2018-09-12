@@ -96,18 +96,23 @@ public class ActActivity extends AppCompatActivity
         {
             act.id = cursor.getInt(cursor.getColumnIndex("id"));
             act.idAct = cursor.getInt(cursor.getColumnIndex("idAct"));
+            act.idNomer = cursor.getInt(cursor.getColumnIndex("idNomer"));
             act.date = cursor.getString(cursor.getColumnIndex("date"));
-            act.doroga = cursor.getString(cursor.getColumnIndex("doroga"));
-            act.uchastok = cursor.getString(cursor.getColumnIndex("uchastok"));
+            act.object = cursor.getString(cursor.getColumnIndex("object"));
             act.vid_rabot = cursor.getString(cursor.getColumnIndex("vid_rabot"));
-            act.rgu = cursor.getString(cursor.getColumnIndex("rgu"));
-            act.rgu = act.rgu.replace ("&quot;", "\"");
             act.ispolnitel = cursor.getString(cursor.getColumnIndex("ispolnitel"));
-            act.gruppa_vyezda = cursor.getString(cursor.getColumnIndex("gruppa_vyezda"));
+            act.gruppa_vyezda1 = cursor.getString(cursor.getColumnIndex("gruppa_vyezda1"));
+            act.gruppa_vyezda2 = cursor.getString(cursor.getColumnIndex("gruppa_vyezda2"));
+            act.gruppa_vyezda3 = cursor.getString(cursor.getColumnIndex("gruppa_vyezda3"));
             act.podradchyk = cursor.getString(cursor.getColumnIndex("podradchyk"));
+            act.subpodradchyk = cursor.getString(cursor.getColumnIndex("subpodradchyk"));
+            act.inj_sluzhby = cursor.getString(cursor.getColumnIndex("inj_sluzhby"));
+            act.avt_nadzor = cursor.getString(cursor.getColumnIndex("avt_nadzor"));
+            act.uorg = cursor.getString(cursor.getColumnIndex("uorg"));
             act.podradchyk = act.podradchyk.replace ("&quot;", "\"");
-            act.customer = cursor.getString(cursor.getColumnIndex("customer"));
-            act.customer = act.customer.replace ("&quot;", "\"");
+            act.zakazchik = cursor.getString(cursor.getColumnIndex("zakazchik"));
+            act.rgu = cursor.getString(cursor.getColumnIndex("rgu_name"));
+            act.zakazchik = act.zakazchik.replace ("&quot;", "\"");
         }
 
         cursor.close();
@@ -123,18 +128,21 @@ public class ActActivity extends AppCompatActivity
         fab = (FloatingActionButton) findViewById(R.id.fabAdd);
         fab.hide();
 
-        final ActOneFragment actOneFragment = ActOneFragment.getInstance(String.valueOf(act.idAct), act.date, act.doroga + ", " + act.uchastok, act.vid_rabot);
-        final ActTwoFragment actTwoFragment = ActTwoFragment.getInstance(act.rgu, act.ispolnitel, act.gruppa_vyezda);
-        final ActFreeFragment actFreeFragment = ActFreeFragment.getInstance(act.id);
+        final ActOneFragment actOneFragment = ActOneFragment.getInstance(String.valueOf(act.idNomer),
+                act.date, act.object, act.vid_rabot, act.ispolnitel, act.gruppa_vyezda1, act.gruppa_vyezda2, act.gruppa_vyezda3);
+        final ActTwoFragment actTwoFragment = ActTwoFragment.getInstance(act.rgu, act.ispolnitel, act.gruppa_vyezda1);
+        final ActFreeFragment actFreeFragment = ActFreeFragment.getInstance(act.id, fab);
         actFourFragment = ActFourFragment.getInstance(act.id, fab);
         actFiveFragment = ActFiveFragment.getInstance(act.id, fab);
         actSixFragment = ActSixFragment.getInstance(act.id, fab);
         actSevenFragment = ActSevenFragment.getInstance(act.id, fab);
         actEightFragment = ActEightFragment.getInstance(act.id, fab);
-        ActCloseFragment actCloseFragment = ActCloseFragment.getInstance(act.doroga + "\n" + act.uchastok + ", " + act.vid_rabot,act.id);
+        ActCloseFragment actCloseFragment = ActCloseFragment.getInstance(act.object + ", " + act.vid_rabot,act.id);
 
         fragments.add(actOneFragment);
+/*
         fragments.add(actTwoFragment);
+*/
         fragments.add(actFreeFragment);
         fragments.add(actFourFragment);
         fragments.add(actFiveFragment);
@@ -169,7 +177,7 @@ public class ActActivity extends AppCompatActivity
 
                 currentPos = position;
 
-                if (position == 3)
+                if (position == 2)
                 {
                     actFiveFragment.closeCheckUi();
                     actSixFragment.closeCheckUi();
@@ -179,10 +187,10 @@ public class ActActivity extends AppCompatActivity
                     menu.findItem(R.id.action_remove).setVisible(true);
                     menu.findItem(R.id.action_check).setVisible(false);
 
-                    actFourFragment.setFabClick();
+                    actFreeFragment.setFabClick();
                     fab.show();
                 }
-                else if (position == 4)
+                else if (position == 3)
                 {
                     actFourFragment.closeCheckUi();
                     actSixFragment.closeCheckUi();
@@ -195,7 +203,7 @@ public class ActActivity extends AppCompatActivity
                     actFiveFragment.setFabClick();
                     fab.show();
                 }
-                else if (position == 5)
+                else if (position == 4)
                 {
                     actFourFragment.closeCheckUi();
                     actFiveFragment.closeCheckUi();
@@ -211,7 +219,7 @@ public class ActActivity extends AppCompatActivity
                     actSevenFragment.setFabClick();
                     fab.show();
                 }
-                else if (position == 6)
+                else if (position == 5)
                 {
                     actFourFragment.closeCheckUi();
                     actFiveFragment.closeCheckUi();
@@ -224,7 +232,7 @@ public class ActActivity extends AppCompatActivity
                     actEightFragment.setFabClick();
                     fab.show();
                 }
-                else if (position == 7)
+                else if (position == 6)
                 {
                     actFourFragment.closeCheckUi();
                     actFiveFragment.closeCheckUi();

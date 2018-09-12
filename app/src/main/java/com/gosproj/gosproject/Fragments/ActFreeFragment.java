@@ -3,10 +3,12 @@ package com.gosproj.gosproject.Fragments;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.util.Log;
@@ -18,6 +20,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gosproj.gosproject.DefectActivity;
 import com.gosproj.gosproject.Functionals.DBHelper;
 import com.gosproj.gosproject.R;
 
@@ -26,19 +29,33 @@ public class ActFreeFragment extends Fragment
     Context context;
     Resources resources;
     Activity activity;
+    FloatingActionButton fab;
+    final int REQUEST_ADD_DEFECT = 220;
 
     String rgu;
 
     EditText editText;
 
     int id;
-
-    public static ActFreeFragment getInstance(int id)
+    public void setFabClick()
+    {
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(activity, DefectActivity.class);
+                intent.putExtra("id", id);
+                activity.startActivityForResult(intent, REQUEST_ADD_DEFECT);
+                //intent.putExtra("proba", new Proba());
+            }
+        });
+    }
+    public static ActFreeFragment getInstance(int id, FloatingActionButton fab)
     {
         Bundle args = new Bundle();
         ActFreeFragment fragment = new ActFreeFragment();
         fragment.setArguments(args);
         fragment.id = id;
+        fragment.fab = fab;
         return fragment;
     }
 

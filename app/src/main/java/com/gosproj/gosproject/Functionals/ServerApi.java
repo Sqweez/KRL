@@ -19,7 +19,7 @@ import java.io.InputStream;
 
 public class ServerApi
 {
-    String url = "http://kazroadlab.kad.org.kz/mp/index1.php";
+    String url = "http://kazroadlab.kad.org.kz/mp/scan.php";
     //NEW KEY
 /*
     String key = "bW9iaWxlLWFwcDpQQXhwam1HbUNE";

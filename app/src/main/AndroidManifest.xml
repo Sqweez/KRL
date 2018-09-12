@@ -112,7 +112,11 @@
             android:name=".QRAuth"
             android:label="@string/title_activity_qrauth"
             android:theme="@style/AppTheme" />
-        <activity android:name=".InstructionActivity"></activity>
+        <activity android:name=".InstructionActivity" />
+        <activity
+            android:name=".MeasurmentActivity"
+            android:label="@string/title_activity_measurment"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

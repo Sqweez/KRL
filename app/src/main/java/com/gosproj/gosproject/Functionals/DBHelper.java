@@ -7,7 +7,7 @@ import android.util.Log;
 
 public class DBHelper extends SQLiteOpenHelper
 {
-    public static final int DATABASE_VERSION = 13;
+    public static final int DATABASE_VERSION = 21;
     public static String DATABASE_NAME = "";
 
     Context context;
@@ -22,6 +22,7 @@ public class DBHelper extends SQLiteOpenHelper
     public static String Videos = "Videos";
     public static String OfflineZip = "OfflineZip";
     public static String Users = "Users";
+    public static String VidRabot = "VidRabot";
 
     public DBHelper(Context context, String name)
     {
@@ -44,19 +45,32 @@ public class DBHelper extends SQLiteOpenHelper
                         + "rgu_name text,"
                         + "rgu_id integer"+ ");");
                 break;
+            case "VidRabot":
+                db.execSQL("create table "+ DATABASE_NAME +" ("
+                        + "id integer primary key autoincrement,"
+                        + "vid_rabot_id integer,"
+                        + "name text"+  ");");
+                break;
             case "Departures":
                 db.execSQL("create table "+ DATABASE_NAME +" ("
                         + "id integer primary key autoincrement,"
                         + "idAct integer,"
+                        + "idNomer integer,"
                         + "date text,"
-                        + "doroga text,"
-                        + "uchastok text,"
+                        + "object text,"
+                        + "id_rabot integer,"
                         + "vid_rabot text,"
-                        + "rgu text,"
                         + "ispolnitel text,"
-                        + "gruppa_vyezda text,"
+                        + "gruppa_vyezda1 text,"
+                        + "gruppa_vyezda2 text,"
+                        + "gruppa_vyezda3 text,"
                         + "podradchyk text,"
-                        + "customer text,"
+                        + "subpodradchyk text,"
+                        + "avt_nadzor text,"
+                        + "inj_sluzhby text,"
+                        + "rgu_name text,"
+                        + "uorg text,"
+                        + "zakazchik text,"
                         + "isClose integer"+ ");");
                 break;
             case "Measurements":
@@ -109,6 +123,7 @@ public class DBHelper extends SQLiteOpenHelper
                         + "id integer primary key autoincrement,"
                         + "idVyezda integer,"
                         + "docType integer,"
+                        + "rgu_id integer,"
                         + "path text"  + ");");
                 break;
             case "Videos":

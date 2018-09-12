@@ -210,13 +210,12 @@ public class CreateAndLoadService extends Service
             act.id = cursor.getInt(cursor.getColumnIndex("id"));
             act.idAct = cursor.getInt(cursor.getColumnIndex("idAct"));
             act.date = cursor.getString(cursor.getColumnIndex("date"));
-            act.doroga = cursor.getString(cursor.getColumnIndex("doroga"));
-            act.uchastok = cursor.getString(cursor.getColumnIndex("uchastok"));
+            act.object = cursor.getString(cursor.getColumnIndex("object"));
             act.vid_rabot = cursor.getString(cursor.getColumnIndex("vid_rabot"));
             act.rgu = cursor.getString(cursor.getColumnIndex("rgu"));
             act.rgu = act.rgu.replace ("&quot;", "\"");
             act.ispolnitel = cursor.getString(cursor.getColumnIndex("ispolnitel"));
-            act.gruppa_vyezda = cursor.getString(cursor.getColumnIndex("gruppa_vyezda"));
+            act.gruppa_vyezda1 = cursor.getString(cursor.getColumnIndex("gruppa_vyezda1"));
             act.podradchyk = cursor.getString(cursor.getColumnIndex("podradchyk"));
 
             actID = act.idAct;
@@ -251,12 +250,11 @@ public class CreateAndLoadService extends Service
         {
             obj.put("idAct", act.idAct);
             obj.put("date", act.date);
-            obj.put("doroga", act.doroga);
-            obj.put("uchastok", act.uchastok);
+            obj.put("object", act.object);
             obj.put("vid_rabot", act.vid_rabot);
             obj.put("rgu", act.rgu);
             obj.put("ispolnitel", act.ispolnitel);
-            obj.put("gruppa_vyezda", act.gruppa_vyezda);
+            obj.put("gruppa_vyezda1", act.gruppa_vyezda1);
             obj.put("podradchyk", act.podradchyk);
             obj.put("measurements", zamery);
         }

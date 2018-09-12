@@ -55,6 +55,7 @@ public class ScanActivity extends AppCompatActivity {
     String docName;
     FloatingActionButton loadScans;
     int count = 1;
+    int rgu_id;
     boolean isDeleting = false;
     @Override
     protected void onDestroy() {
@@ -74,6 +75,12 @@ public class ScanActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Сканирование");
         new NavigationDrawer(context, activity, toolbar);
         scans.clear();
+        DBHelper dbHelper1 = new DBHelper(context, DBHelper.Users);
+        SQLiteDatabase db1 = dbHelper1.getWritableDatabase();
+        Cursor cursor1 = db1.rawQuery("SELECT rgu_id FROM Users", null);
+        if (cursor1.moveToFirst()) {
+            rgu_id = cursor1.getInt(cursor1.getColumnIndex("rgu_id"));
+        }
         fab = (FloatingActionButton) findViewById(R.id.fab);
         gridView = (GridView) findViewById(R.id.grid_view);
         txView = (TextView) findViewById(R.id.title);
@@ -90,8 +97,9 @@ public class ScanActivity extends AppCompatActivity {
                 int id = cursor.getInt(cursor.getColumnIndex("id"));
                 int idDept = cursor.getInt(cursor.getColumnIndex("idVyezda"));
                 int type_of_doc = cursor.getInt(cursor.getColumnIndex("docType"));
+                int rgu_id = cursor.getInt(cursor.getColumnIndex("rgu_id"));
                 String path = cursor.getString(cursor.getColumnIndex("path"));
-                scans.add(new Scan(id, idDept, path, type_of_doc));
+                scans.add(new Scan(id, idDept, path, type_of_doc, rgu_id));
             }
             while (cursor.moveToNext());
         }
@@ -244,12 +252,13 @@ public class ScanActivity extends AppCompatActivity {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put("idVyezda", vyezdId);
+        cv.put("rgu_id", rgu_id);
         cv.put("path", fullPath.getPath().toString());
         cv.put("docType", docType);
         long rowID = db.insert(dbHelper.getDatabaseName(), null, cv);
 
         if (rowID != 0) {
-            adapter.addPhoto(new Scan((int) rowID, Integer.parseInt(vyezdId), fullPath.getPath().toString(), Integer.parseInt(docType)));
+            adapter.addPhoto(new Scan((int) rowID, Integer.parseInt(vyezdId), fullPath.getPath().toString(), Integer.parseInt(docType), rgu_id));
             loadScans.setVisibility(View.VISIBLE);
             menu.findItem(R.id.action_remove).setVisible(true);
         } else {
