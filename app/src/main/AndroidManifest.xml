@@ -11,6 +11,7 @@
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-feature android:name="android.hardware.location.gps" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -29,6 +30,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="icon, label">
+        <meta-data android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version"/>
         <service android:name=".Services.CreateAndLoadService" />
 
         <activity
@@ -89,18 +92,6 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity
-            android:name=".DocumentScannerActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_document_scanner"
-            android:screenOrientation="portrait"
-            android:theme="@style/FullscreenTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="com.example.action.DOC_SCAN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
         <activity android:name=".CropActivity">
             <intent-filter>
                 <action android:name="com.example.action.DOC_CROP" />
@@ -116,7 +107,13 @@
         <activity
             android:name=".MeasurmentActivity"
             android:label="@string/title_activity_measurment"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
+        <activity android:name=".SignatureActivity" />
+        <activity
+            android:name=".Helper.HelperActivity"
+            android:label="@string/title_activity_helper"
+            android:theme="@style/AppTheme" />
+
     </application>
 
 </manifest>

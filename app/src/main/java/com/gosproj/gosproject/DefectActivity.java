@@ -3,6 +3,7 @@ package com.gosproj.gosproject;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Entity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -16,7 +17,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.location.LocationSettingsStates;
 import com.gosproj.gosproject.Functionals.DBHelper;
+import com.gosproj.gosproject.Services.LogsHelper;
 import com.gosproj.gosproject.Structures.Defects;
 import com.gosproj.gosproject.Structures.Proba;
 
@@ -31,8 +34,10 @@ public class DefectActivity extends AppCompatActivity
     Toolbar toolbar;
 
     TextInputLayout name;
-    TextInputLayout killo;
-    TextInputLayout comment;
+
+    LogsHelper logsHelper;
+    String oldDef;
+    String newDef;
 
     Button save;
     Button saveAndAddNew;
@@ -55,6 +60,8 @@ public class DefectActivity extends AppCompatActivity
         context = this;
         resources = getResources();
 
+        logsHelper = new LogsHelper(LogsHelper.DEFECT, context, activity, id);
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(resources.getString(R.string.app_name));
@@ -62,8 +69,6 @@ public class DefectActivity extends AppCompatActivity
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white);
 
         name = (TextInputLayout) findViewById(R.id.name_dcm);
-        killo = (TextInputLayout) findViewById(R.id.killo);
-        comment = (TextInputLayout) findViewById(R.id.comment);
 
         save = (Button) findViewById(R.id.save);
         saveAndAddNew = (Button) findViewById(R.id.saveAndAddNew);
@@ -71,8 +76,8 @@ public class DefectActivity extends AppCompatActivity
         if (defects != null)
         {
             name.getEditText().setText(defects.name);
-            killo.getEditText().setText(defects.kilometr);
-            comment.getEditText().setText(defects.comment);
+
+            oldDef = defects.name;
 
             save.setText(resources.getString(R.string.edit));
             saveAndAddNew.setText(resources.getString(R.string.editAddNew));
@@ -101,7 +106,7 @@ public class DefectActivity extends AppCompatActivity
 
         if (!name.getEditText().getText().toString().equals(""))
         {
-            if (!killo.getEditText().getText().toString().equals(""))
+            if (!name.getEditText().getText().toString().equals(""))
             {
                 isT = true;
             }
@@ -126,8 +131,8 @@ public class DefectActivity extends AppCompatActivity
         if (clickSave())
         {
             name.getEditText().setText("");
-            killo.getEditText().setText("");
-            comment.getEditText().setText("");
+            /*killo.getEditText().setText("");
+            comment.getEditText().setText("");*/
 
             defects = null;
         }
@@ -175,12 +180,17 @@ public class DefectActivity extends AppCompatActivity
         DBHelper dbHelper = new DBHelper(getApplicationContext(), DBHelper.DEFECTS);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        Cursor cursor = db.rawQuery("UPDATE Defects SET name = ?, kilometr = ?, comment = ?" +
-                        "WHERE id = ?", new String[]{ name.getEditText().getText().toString(), killo.getEditText().getText().toString(), comment.getEditText().getText().toString(), String.valueOf(defects.id)});
+        Cursor cursor = db.rawQuery("UPDATE Defects SET name = ?" +
+                        "WHERE id = ?", new String[]{ name.getEditText().getText().toString(), String.valueOf(defects.id)});
+
+
+        newDef = name.getEditText().getText().toString();
+
+        logsHelper.createLog(oldDef, newDef, LogsHelper.ACTION_EDIT);
 
         if (cursor != null)
         {
-            returnDefects.add(new Defects(defects.id, id, name.getEditText().getText().toString(), killo.getEditText().getText().toString(), comment.getEditText().getText().toString()));
+            returnDefects.add(new Defects(defects.id, id, name.getEditText().getText().toString()));
 
             result = true;
         }
@@ -211,14 +221,13 @@ public class DefectActivity extends AppCompatActivity
 
         cv.put("idDept", String.valueOf(id));
         cv.put("name", name.getEditText().getText().toString());
-        cv.put("kilometr", killo.getEditText().getText().toString());
-        cv.put("comment", comment.getEditText().getText().toString());
 
         long rowID = db.insert(dbHelper.getDatabaseName(), null, cv);
-
+        newDef = name.getEditText().getText().toString();
         if (rowID != 0)
         {
-            returnDefects.add(new Defects((int) rowID, id, name.getEditText().getText().toString(), killo.getEditText().getText().toString(), comment.getEditText().getText().toString()));
+            logsHelper.createLog("", newDef, LogsHelper.ACTION_ADD);
+            returnDefects.add(new Defects((int) rowID, id, name.getEditText().getText().toString()));
 
             result = true;
         }

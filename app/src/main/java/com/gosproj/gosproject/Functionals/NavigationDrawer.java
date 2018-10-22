@@ -67,15 +67,9 @@ public class NavigationDrawer {
         this.activity = activity;
         this.resources = activity.getResources();
         this.toolbar = toolbar;
-        DBHelper dbHelper = new DBHelper(context, DBHelper.Users);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT id, site_id, name, rgu_name, rgu_id FROM Users", null);
-        if (cursor.moveToFirst()) {
-            name = cursor.getString(cursor.getColumnIndex("name"));
-            rgu_name = cursor.getString(cursor.getColumnIndex("rgu_name"));
-        }
-        dbHelper.close();
-        db.close();
+        SharedPreferences user_info = context.getSharedPreferences("com.gosproj.gosproject", Context.MODE_PRIVATE);
+        name = user_info.getString("name", "ИМЯ ТЕСТ");
+        rgu_name = user_info.getString("rgu_name", "РГУ ТЕСТ");
         SharedPreferences sharedPref = context.getSharedPreferences(resources.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         //TODO Вернуть позже
         PrimaryDrawerItem Main = new PrimaryDrawerItem().withIdentifier(2)
@@ -171,6 +165,10 @@ public class NavigationDrawer {
                         db.delete("Users", null, null);
                         dbHelper.close();
                         db.close();
+                        SharedPreferences user_info = context.getSharedPreferences("com.gosproj.gosproject", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = user_info.edit();
+                        editor.clear();
+                        editor.apply();
                         activity.getApplicationContext().startActivity(new Intent(activity.getApplicationContext(), MainActivity.class));
                         activity.finish();
                         return true;
@@ -298,7 +296,7 @@ public class NavigationDrawer {
 
                         try {
                             File file = new File(path);
-                            boolean result = new ServerApi().UpLoadFile(file);
+                            boolean result = new ServerApi(ServerApi.ACTION_LOAD_ACT).UpLoadFile(file);
 
                             if (result) {
                                 file.delete();

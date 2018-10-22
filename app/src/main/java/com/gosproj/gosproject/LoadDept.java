@@ -61,7 +61,6 @@ public class LoadDept extends AppCompatActivity
         integrator.setOrientationLocked(true);
         integrator.initiateScan();
     }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {

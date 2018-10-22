@@ -20,6 +20,7 @@ import com.gosproj.gosproject.DefectActivity;
 import com.gosproj.gosproject.Functionals.DBHelper;
 import com.gosproj.gosproject.Interfaces.RVOnClickInterface;
 import com.gosproj.gosproject.R;
+import com.gosproj.gosproject.Services.LogsHelper;
 import com.gosproj.gosproject.Structures.Defects;
 import com.gosproj.gosproject.Structures.Proba;
 
@@ -38,6 +39,8 @@ public class ActFiveFragment extends Fragment implements RVOnClickInterface<Defe
 
     RecyclerView recyclerView;
     FloatingActionButton fab;
+
+    LogsHelper logsHelper;
 
     ArrayList<Defects> def = new ArrayList<Defects>();
     RVDefectAdapter rvDefectAdapter;
@@ -66,6 +69,8 @@ public class ActFiveFragment extends Fragment implements RVOnClickInterface<Defe
 
         def.clear();
 
+        logsHelper = new LogsHelper(LogsHelper.DEFECT, context, activity, id);
+
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
 
         DBHelper dbHelper = new DBHelper(context, DBHelper.DEFECTS);
@@ -80,10 +85,8 @@ public class ActFiveFragment extends Fragment implements RVOnClickInterface<Defe
                 int id = cursor.getInt(cursor.getColumnIndex("id"));
                 int idDept = cursor.getInt(cursor.getColumnIndex("idDept"));
                 String name = cursor.getString(cursor.getColumnIndex("name"));
-                String kilometr = cursor.getString(cursor.getColumnIndex("kilometr"));
-                String comment = cursor.getString(cursor.getColumnIndex("comment"));
 
-                def.add(new Defects(id, idDept, name, kilometr, comment));
+                def.add(new Defects(id, idDept, name));
             }
             while (cursor.moveToNext());
         }
@@ -165,6 +168,8 @@ public class ActFiveFragment extends Fragment implements RVOnClickInterface<Defe
 
         for (int i=0; i<removes.size(); i++)
         {
+            String defect = removes.get(i).name;
+            logsHelper.createLog(defect, "", LogsHelper.ACTION_DELETE);
             int delCount = db.delete(DBHelper.DEFECTS, "id = ?",
                     new String[]{String.valueOf(removes.get(i).id)});
         }

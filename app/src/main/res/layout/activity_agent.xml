@@ -31,7 +31,7 @@
             android:focusable="true"
             android:focusableInTouchMode="true">
 
-            <RelativeLayout
+            <!--<RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center">
@@ -46,12 +46,12 @@
                     app:penMinWidth="1.5dp"
                     app:penColor="@android:color/black"
                     />
-                <!--<com.gosproj.gosproject.Views.PaintView
+                &lt;!&ndash;<com.gosproj.gosproject.Views.PaintView
                     android:layout_width="320dp"
                     android:layout_height="200dp"
                     android:id="@+id/paint"
                     android:background="@color/transparent"
-                    android:layout_gravity="center" />-->
+                    android:layout_gravity="center" />&ndash;&gt;
 
                 <View
                     android:layout_width="wrap_content"
@@ -108,12 +108,12 @@
                     android:layout_marginLeft="16dp"
                     android:textSize="16sp"/>
 
-            </LinearLayout>
+            </LinearLayout>-->
 
-            <View
+            <!--<View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/gray" />
+                android:background="@color/gray" />-->
 
             <RadioGroup
                 android:layout_width="match_parent"
@@ -121,13 +121,6 @@
                 android:layout_marginBottom="16dp"
                 android:layout_marginTop="16dp"
                 android:id="@+id/radioGroup">
-                <RadioButton
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Подрядчик"
-                    android:backgroundTint="@color/accent"
-                    android:buttonTint="@color/accent"
-                    android:id="@+id/provider"/>
 
                 <RadioButton
                     android:layout_width="match_parent"
@@ -140,10 +133,43 @@
                 <RadioButton
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Инженерная служба"
+                    android:text="Инженерные службы"
                     android:backgroundTint="@color/accent"
                     android:buttonTint="@color/accent"
                     android:id="@+id/eng_service"/>
+
+                <RadioButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Подрядчик"
+                    android:backgroundTint="@color/accent"
+                    android:buttonTint="@color/accent"
+                    android:id="@+id/provider"/>
+
+                <RadioButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Субподрядчик"
+                    android:backgroundTint="@color/accent"
+                    android:buttonTint="@color/accent"
+                    android:id="@+id/subprovider"/>
+
+                <RadioButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Авторский надзор"
+                    android:backgroundTint="@color/accent"
+                    android:buttonTint="@color/accent"
+                    android:id="@+id/avt_nadz"/>
+
+                <RadioButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Уполномоченные органы"
+                    android:backgroundTint="@color/accent"
+                    android:buttonTint="@color/accent"
+                    android:id="@+id/uorg"/>
+
             </RadioGroup>
 
             <View

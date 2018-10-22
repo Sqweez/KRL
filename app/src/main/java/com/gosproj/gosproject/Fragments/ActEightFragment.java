@@ -25,6 +25,7 @@ import com.gosproj.gosproject.Adapters.GVPhotoAdapter;
 import com.gosproj.gosproject.Adapters.GVVideoAdapter;
 import com.gosproj.gosproject.Functionals.DBHelper;
 import com.gosproj.gosproject.R;
+import com.gosproj.gosproject.Services.LogsHelper;
 import com.gosproj.gosproject.Structures.Photo;
 import com.gosproj.gosproject.Structures.Videos;
 
@@ -46,6 +47,8 @@ public class ActEightFragment extends Fragment
     Activity activity;
 
     ArrayList<Videos> videoses = new ArrayList<Videos>();
+
+    LogsHelper logsHelper;
 
     GridView gridView;
     GVVideoAdapter gvVideoAdapter;
@@ -75,7 +78,7 @@ public class ActEightFragment extends Fragment
         activity = this.getActivity();
         context = activity.getApplicationContext();
         resources = activity.getResources();
-
+        logsHelper = new LogsHelper(LogsHelper.VIDEO, context, activity, id);
         videoses.clear();
 
         gridView = (GridView) view.findViewById(R.id.grid_view);
@@ -179,6 +182,8 @@ public class ActEightFragment extends Fragment
 
         long rowID = db.insert(dbHelper.getDatabaseName(), null, cv);
 
+        logsHelper.createLog("", "", LogsHelper.ACTION_ADD);
+
         if (rowID != 0)
         {
             //photos.add(new Photo((int) rowID, id, fullPath.getPath().toString()));
@@ -218,10 +223,10 @@ public class ActEightFragment extends Fragment
 
         for (int i=0; i<removes.size(); i++)
         {
+            logsHelper.createLog("", "", LogsHelper.ACTION_DELETE);
             int delCount = db.delete(DBHelper.Videos, "id = ?",
                     new String[]{String.valueOf(removes.get(i).id)});
         }
-
         db.close();
         dbHelper.close();
 

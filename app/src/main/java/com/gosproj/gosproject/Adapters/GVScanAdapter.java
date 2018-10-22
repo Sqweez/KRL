@@ -44,7 +44,6 @@ public class GVScanAdapter extends BaseAdapter
 
     PhotoRequestHandler photoRequestHandler;
     Picasso picassoInstance;
-
     public GVScanAdapter(Activity activity, ArrayList<Scan> scans)
     {
         this.activity = activity;

@@ -7,6 +7,7 @@ public class Act
     public int idNomer;
     public String date;
     public String object;
+    public int id_rabot;
     public String vid_rabot;
     public String ispolnitel;
     public String gruppa_vyezda1;

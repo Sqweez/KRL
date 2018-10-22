@@ -19,14 +19,13 @@ import java.io.InputStream;
 
 public class ServerApi
 {
-    String url = "http://kazroadlab.kad.org.kz/mp/scan.php";
-    //NEW KEY
-/*
-    String key = "bW9iaWxlLWFwcDpQQXhwam1HbUNE";
-*/
-    //OLD KEY
+    public static String ACTION_LOAD_SCANS = "http://kazroadlab.kad.org.kz/mp/scan.php";
+    public static String ACTION_LOAD_ACT = "http://kazroadlab.kad.org.kz/mp/index1.php";
+    String url;
     String key = "bW9iaWxlLWFwcDpOSktXSHBOOFZj";
-
+    public ServerApi(String url){
+        this.url = url;
+    }
 
     public boolean UpLoadFile(File file) throws IOException
     {

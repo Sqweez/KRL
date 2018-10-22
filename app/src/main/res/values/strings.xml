@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">KazRoadLab</string>
+    <string name="warning">Внимание! После нажатия кнопки \"Сохранить\" изменение подписи будет невозможно.</string>
     <string name="list_departures">Список выездов</string>
     <string name="active_task">Акты выполненных работ</string>
     <string name="create_new_departure">Создать новый выезд</string>
@@ -23,19 +24,20 @@
     <string name="logout">Смена пользователя</string>
     <string name="name_dcm">Наименование ДСМ</string>
     <string name="count">Количество</string>
-    <string name="size">Объем (м3, тн, b)</string>
+    <string name="size">Объем (м<sup>3</sup>, тн, h, кг, шт)</string>
     <string name="place">Место отбора</string>
     <string name="provider">Поставщик</string>
     <string name="typeWork">Для каких видов работ</string>
     <string name="save">Сохранить</string>
-    <string name="saveAddNew">Сохранить и Добавить новую</string>
+    <string name="saveAddNew">Сохранить и Добавить</string>
     <string name="edit">Редактировать</string>
     <string name="delete">Удалить</string>
     <string name="editAddNew">Редактировать и Добавить новую</string>
     <string name="fail_add_new_prob">Не удалось добавить новую пробу</string>
-    <string name="fail_edit_prob">Не удалось редакьтолвать новую пробу</string>
+    <string name="fail_edit_prob">Не удалось редактировать новую пробу</string>
     <string name="field_filds">Заполните все поля</string>
-    <string name="name_def">Название дефекта</string>
+    <string name="name_def">Дефект</string>
+    <string name="name_zamera">Замер</string>
     <string name="kilo_def">Киллометраж</string>
     <string name="coment_def">Комментарий</string>
     <string name="name_company">Название компании</string>
@@ -67,4 +69,6 @@
     <string name="continueText">Продолжить</string>
     <string name="instr_title">Инструкция по авторизации</string>
     <string name="title_activity_measurment">MeasurmentActivity</string>
+    <string name="title_activity_helper">HelperActivity</string>
+    <string name="untilSigns">Кнопка закрыть акт будет недоступна, пока все присутствующие не поставят подпись</string>
 </resources>

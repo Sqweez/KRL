@@ -48,12 +48,11 @@ public class ScanActivity extends AppCompatActivity {
     Uri imageUri;
     String vyezdId;
     String docType;
-    SmartCropper ivCrop;
     ArrayList<Scan> scans = new ArrayList<Scan>();
-    FloatingActionButton fab;
+    FloatingActionButton createScan;
     Menu menu;
     String docName;
-    FloatingActionButton loadScans;
+    FloatingActionButton uploadScans;
     int count = 1;
     int rgu_id;
     boolean isDeleting = false;
@@ -69,7 +68,7 @@ public class ScanActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scan);
         activity = this;
         context = this;
-        loadScans = (FloatingActionButton) findViewById(R.id.loadScans);
+        uploadScans = (FloatingActionButton) findViewById(R.id.uploadScans);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Сканирование");
@@ -81,7 +80,7 @@ public class ScanActivity extends AppCompatActivity {
         if (cursor1.moveToFirst()) {
             rgu_id = cursor1.getInt(cursor1.getColumnIndex("rgu_id"));
         }
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        createScan = (FloatingActionButton) findViewById(R.id.createScans);
         gridView = (GridView) findViewById(R.id.grid_view);
         txView = (TextView) findViewById(R.id.title);
         DBHelper dbHelper = new DBHelper(context, DBHelper.Scans);
@@ -104,14 +103,14 @@ public class ScanActivity extends AppCompatActivity {
             while (cursor.moveToNext());
         }
         if(scans.isEmpty()){
-            loadScans.setVisibility(View.GONE);
+            uploadScans.setVisibility(View.GONE);
         }
         cursor.close();
         db.close();
         dbHelper.close();
         adapter = new GVScanAdapter(activity, scans);
         gridView.setAdapter(adapter);
-        loadScans.setOnClickListener(new View.OnClickListener() {
+        uploadScans.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder builder;
@@ -141,7 +140,8 @@ public class ScanActivity extends AppCompatActivity {
                builder.create().show();
             }
         });
-        fab.setOnClickListener(new View.OnClickListener() {
+        //@TODO КОСТЫЛИ
+        createScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent takePictureIntent = new Intent(ACTION_CROP);
@@ -194,7 +194,7 @@ public class ScanActivity extends AppCompatActivity {
     public void removeElements() {
         isDeleting = true;
         adapter.selectedElements();
-        fab.hide();
+        createScan.hide();
     }
     public void removeElementsOk() {
         ArrayList<Scan> removes = adapter.removeElements();
@@ -206,13 +206,13 @@ public class ScanActivity extends AppCompatActivity {
                     new String[]{String.valueOf(removes.get(i).id)});
         }
         if(scans.isEmpty()){
-            loadScans.setVisibility(View.GONE);
+            uploadScans.setVisibility(View.GONE);
             menu.findItem(R.id.action_remove).setVisible(false);
         }
         db.close();
         dbHelper.close();
 
-        fab.show();
+        createScan.show();
     }
     private File createImageFile() throws IOException {
         String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -241,7 +241,7 @@ public class ScanActivity extends AppCompatActivity {
             menu.findItem(R.id.action_remove).setVisible(true);
             menu.findItem(R.id.action_check).setVisible(false);
             isDeleting = false;
-            fab.show();
+            createScan.show();
         }
         else{
             activity.startActivity(new Intent(activity, MainActivity.class));
@@ -259,7 +259,7 @@ public class ScanActivity extends AppCompatActivity {
 
         if (rowID != 0) {
             adapter.addPhoto(new Scan((int) rowID, Integer.parseInt(vyezdId), fullPath.getPath().toString(), Integer.parseInt(docType), rgu_id));
-            loadScans.setVisibility(View.VISIBLE);
+            uploadScans.setVisibility(View.VISIBLE);
             menu.findItem(R.id.action_remove).setVisible(true);
         } else {
             Toast.makeText(context, "Не удалось добавить фотографию", Toast.LENGTH_SHORT).show();

@@ -54,7 +54,7 @@ public class RVDefectAdapter extends RecyclerView.Adapter<RVDefectAdapter.ViewHo
     @Override
     public void onBindViewHolder(final RVDefectAdapter.ViewHolder holder, final int position)
     {
-        holder.name.setText(def.get(position).name + ", " + def.get(position).kilometr + " км. " + def.get(position).comment);
+        holder.name.setText(def.get(position).name);
         holder.checkBox.setChecked(false);
 
         if (!select)

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.gosproj.gosproject.ProbaActivity">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ScrollView
+        android:id="@+id/custom_block"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="5dp"
+            android:descendantFocusability="blocksDescendants">
+            <TextView
+                android:id="@+id/infoObject"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:paddingLeft="30dp"
+                android:text="Фамилия Имя отчество"
+                android:textSize="20sp"
+                android:textStyle="normal"
+                android:paddingBottom="5dp"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray"/>
+            <TextView
+                android:id="@+id/infoZamery"
+                android:paddingTop="10dp"
+                android:layout_below="@+id/infoObject"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:paddingLeft="30dp"
+                android:text="Фамилия Имя отчество"
+                android:textSize="20sp"
+                android:textStyle="normal"
+                android:paddingBottom="5dp"/>
+            <View
+                android:id="@+id/line1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray"/>
+            <TextView
+                android:id="@+id/infoDefecty"
+                android:layout_below="@+id/infoZamery"
+                android:paddingTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:paddingLeft="30dp"
+                android:paddingBottom="5dp"
+                android:text="Фамилия Имя отчество"
+                android:textSize="20sp"
+                android:textStyle="normal" />
+            <View
+                android:id="@+id/line2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray"/>
+            <TextView
+                android:id="@+id/infoProby"
+                android:paddingTop="10dp"
+                android:layout_below="@+id/infoDefecty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:paddingLeft="30dp"
+                android:paddingBottom="5dp"
+                android:text="Фамилия Имя отчество"
+                android:textSize="20sp"
+                android:textStyle="normal" />
+            <View
+                android:id="@+id/line3"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray"/>
+            <TextView
+                android:id="@+id/rgu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/infoProby"
+                android:paddingTop="30dp"
+                android:gravity="start"
+                android:paddingLeft="30dp"
+                android:text="Фамилия Имя отчество"
+                android:textSize="20sp"
+                android:textStyle="normal" />
+
+            <TextView
+                android:id="@+id/fio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rgu"
+                android:gravity="start"
+                android:paddingLeft="30dp"
+                android:text="Фамилия Имя отчество"
+                android:textSize="20sp"
+                android:textStyle="normal" />
+
+            <TextView
+                android:id="@+id/work"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/fio"
+                android:gravity="start"
+                android:paddingLeft="30dp"
+                android:text="Фамилия Имя отчество"
+                android:textSize="20sp"
+                android:textStyle="normal" />
+            <com.gosproj.gosproject.Views.CustomScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/work"
+                android:fillViewport="true"
+                android:id="@+id/neasted"
+                android:focusable="true"
+                android:focusableInTouchMode="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/custom_block"
+                    android:padding="16dp"
+                    android:orientation="vertical"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center">
+
+                        <com.github.gcacace.signaturepad.views.SignaturePad
+                            xmlns:android="http://schemas.android.com/apk/res/android"
+                            xmlns:app="http://schemas.android.com/apk/res-auto"
+                            android:id="@+id/paint"
+                            android:layout_width="350dp"
+                            android:layout_height="250dp"
+                            app:penMaxWidth="4dp"
+                            app:penMinWidth="1.5dp"
+                            app:penColor="@android:color/black"
+                            />
+                        <View
+                            android:layout_width="wrap_content"
+                            android:layout_height="1dp"
+                            android:background="@color/accent"
+                            android:layout_alignTop="@id/paint"
+                            android:layout_alignRight="@id/paint"
+                            android:layout_alignLeft="@id/paint"/>
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="wrap_content"
+                            android:background="@color/accent"
+                            android:layout_alignRight="@id/paint"
+                            android:layout_alignBottom="@id/paint"
+                            android:layout_alignTop="@id/paint"/>
+
+                        <View
+                            android:layout_width="wrap_content"
+                            android:layout_height="1dp"
+                            android:background="@color/accent"
+                            android:layout_alignRight="@id/paint"
+                            android:layout_alignBottom="@id/paint"
+                            android:layout_alignLeft="@id/paint"/>
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="wrap_content"
+                            android:background="@color/accent"
+                            android:layout_alignLeft="@id/paint"
+                            android:layout_alignBottom="@id/paint"
+                            android:layout_alignTop="@id/paint"/>
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:orientation="horizontal"
+                        android:id="@+id/buttonErase">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:srcCompat="@drawable/ic_delete_black"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/erase"
+                            android:layout_marginLeft="16dp"
+                            android:textSize="16sp"/>
+
+                    </LinearLayout>
+
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/save"
+                        android:backgroundTint="@color/colorPrimary"
+                        android:id="@+id/save"
+                        android:layout_marginTop="5dp"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="5dp"
+                        android:text="@string/warning"
+                        android:gravity="center"
+                        android:layout_below="@+id/save"
+                        android:textStyle="normal"
+                        android:textSize="10sp"
+                        android:id="@+id/warning"  />
+
+                </LinearLayout>
+
+            </com.gosproj.gosproject.Views.CustomScrollView>
+        </LinearLayout>
+    </ScrollView>
+
+
+
+
+
+</RelativeLayout>

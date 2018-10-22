@@ -29,12 +29,14 @@ import android.widget.Toast;
 
 import com.github.gcacace.signaturepad.views.SignaturePad;
 import com.gosproj.gosproject.Functionals.DBHelper;
+import com.gosproj.gosproject.Services.LogsHelper;
 import com.gosproj.gosproject.Structures.Agent;
 import com.gosproj.gosproject.Structures.Defects;
 import com.gosproj.gosproject.Views.CustomScrollView;
 import com.gosproj.gosproject.Views.PaintView;
 
 import java.io.ByteArrayOutputStream;
+import java.sql.Blob;
 import java.util.ArrayList;
 
 public class AgentActivity extends AppCompatActivity
@@ -44,8 +46,6 @@ public class AgentActivity extends AppCompatActivity
     Resources resources;
 
     Toolbar toolbar;
-    SignaturePad mSignPad;
-    PaintView paintView;
 
     TextInputLayout nameCompany;
     TextInputLayout rang;
@@ -60,11 +60,21 @@ public class AgentActivity extends AppCompatActivity
     RadioButton provider;
     RadioButton customer;
     RadioButton engService;
-
+    RadioButton subprovider;
+    RadioButton uorg;
+    RadioButton avt_nadz;
+    LogsHelper logsHelper;
     CustomScrollView nestedScrollView;
-
+    String oldAgent;
+    String newAgent;
     String podradchykText = "";
     String customerText = "";
+    String subpodrText = "";
+    String avtnadzText = "";
+    String uorgText = "";
+    String injsluzhbText = "";
+    String oldRole;
+    String newRole;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -74,21 +84,27 @@ public class AgentActivity extends AppCompatActivity
 
         id = getIntent().getIntExtra("id", 0);
         agent = getIntent().getParcelableExtra("agent");
-
         activity = this;
         context = this;
         resources = getResources();
+
+        logsHelper = new LogsHelper(LogsHelper.AGENT, context, activity, id);
+
         DBHelper dbHelper = new DBHelper(context, DBHelper.DEPARTURE);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        mSignPad = (SignaturePad) findViewById(R.id.paint);
-        Cursor cursor = db.rawQuery("SELECT podradchyk, customer FROM Departures WHERE id = ?", new String[]{String.valueOf(id)});
+        Cursor cursor = db.rawQuery("SELECT * FROM Departures WHERE id = ?", new String[]{String.valueOf(id)});
 
         if (cursor.moveToFirst())
         {
+            uorgText = cursor.getString(cursor.getColumnIndex("uorg"));
             podradchykText = cursor.getString(cursor.getColumnIndex("podradchyk"));
             podradchykText = podradchykText.replace ("&quot;", "\"");
-            customerText = cursor.getString(cursor.getColumnIndex("customer"));
+            customerText = cursor.getString(cursor.getColumnIndex("zakazchik"));
             customerText = customerText.replace ("&quot;", "\"");
+            subpodrText = cursor.getString(cursor.getColumnIndex("subpodradchyk"));
+            avtnadzText = cursor.getString(cursor.getColumnIndex("avt_nadzor"));
+            injsluzhbText = cursor.getString(cursor.getColumnIndex("inj_sluzhby"));
+            uorgText = cursor.getString(cursor.getColumnIndex("uorg"));
         }
 
         cursor.close();
@@ -105,22 +121,42 @@ public class AgentActivity extends AppCompatActivity
         rang = (TextInputLayout) findViewById(R.id.rang);
         fio = (TextInputLayout) findViewById(R.id.fio);
 
-        erase = (LinearLayout) findViewById(R.id.buttonErase);
-
-/*
-        paintView = (PaintView) findViewById(R.id.paint);
-*/
-
-        provider = (RadioButton) findViewById(R.id.provider);
         customer = (RadioButton) findViewById(R.id.customer);
+        provider = (RadioButton) findViewById(R.id.provider);
         engService = (RadioButton) findViewById(R.id.eng_service);
-
+        subprovider = (RadioButton) findViewById(R.id.subprovider);
+        avt_nadz = (RadioButton) findViewById(R.id.avt_nadz);
+        uorg = (RadioButton) findViewById(R.id.uorg);
         save = (Button) findViewById(R.id.save);
-
-/*
         nestedScrollView = (CustomScrollView) findViewById(R.id.neasted);
-*/
 
+        uorg.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked)
+                {
+                    nameCompany.getEditText().setText(uorgText);
+                }
+            }
+        });
+        subprovider.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked)
+                {
+                    nameCompany.getEditText().setText(subpodrText);
+                }
+            }
+        });
+        avt_nadz.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked)
+                {
+                    nameCompany.getEditText().setText(avtnadzText);
+                }
+            }
+        });
         provider.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -146,34 +182,45 @@ public class AgentActivity extends AppCompatActivity
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked && agent == null)
                 {
-                    nameCompany.getEditText().setText("");
+                    nameCompany.getEditText().setText(injsluzhbText);
                 }
             }
         });
 
-        provider.setChecked(true);
+        customer.setChecked(true);
         if (agent != null)
         {
-            Bitmap bmp = BitmapFactory.decodeByteArray(agent.blob, 0, agent.blob.length);
-
-            nameCompany.getEditText().setText(agent.nameCompany);
             rang.getEditText().setText(agent.rang);
             fio.getEditText().setText(agent.fio);
-            paintView.setBitmap(bmp);
-
-            provider.setChecked(agent.isProvider);
-            customer.setChecked(agent.isCustomer);
+            provider.setChecked(agent.isPodryadchik);
+            customer.setChecked(agent.isZakazchik);
             engService.setChecked(agent.isEngineeringService);
-
+            avt_nadz.setChecked(agent.isAvtNadzor);
+            subprovider.setChecked(agent.isSubPodryadchik);
+            uorg.setChecked(agent.isUpolnomochOrg);
+            nameCompany.getEditText().setText(agent.nameCompany);
+            if(agent.isZakazchik){
+                oldRole = "заказчиком";
+            }
+            else if(agent.isPodryadchik){
+                oldRole = "подрядчиком";
+            }
+            else if(agent.isEngineeringService){
+                oldRole = "инженерной службой";
+            }
+            else if(agent.isAvtNadzor){
+                oldRole = "авторским надзором";
+            }
+            else if(agent.isSubPodryadchik){
+                oldRole = "субподрядчиком";
+            }
+            else if(agent.isUpolnomochOrg){
+                oldRole = "уполномоченными органами";
+            }
+            oldAgent = agent.nameCompany + "|" + agent.rang + "|" + agent.fio + "|" + oldRole;
             save.setText(resources.getString(R.string.edit));
         }
 
-        erase.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mSignPad.clear();
-            }
-        });
 
         save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,22 +228,6 @@ public class AgentActivity extends AppCompatActivity
                 onClickSave();
             }
         });
-    }
-    public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
-        int width = bm.getWidth();
-        int height = bm.getHeight();
-        float scaleWidth = ((float) newWidth) / width;
-        float scaleHeight = ((float) newHeight) / height;
-        // CREATE A MATRIX FOR THE MANIPULATION
-        Matrix matrix = new Matrix();
-        // RESIZE THE BIT MAP
-        matrix.postScale(scaleWidth, scaleHeight);
-
-        // "RECREATE" THE NEW BITMAP
-        Bitmap resizedBitmap = Bitmap.createBitmap(
-                bm, 0, 0, width, height, matrix, false);
-        bm.recycle();
-        return resizedBitmap;
     }
     private boolean checkFields()
     {
@@ -266,13 +297,8 @@ public class AgentActivity extends AppCompatActivity
     {
         boolean result = false;
 
-        DBHelper dbHelper = new DBHelper(getApplicationContext(), DBHelper.Agents);
+        DBHelper dbHelper = DBHelper.getInstance(getApplicationContext(), DBHelper.Agents);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        Bitmap bm = mSignPad.getTransparentSignatureBitmap();
-        bm = getResizedBitmap(bm, 320, 240);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG, 100, out);
-        byte[] buffer = out.toByteArray();
 
         ContentValues cv = new ContentValues();
 
@@ -280,19 +306,40 @@ public class AgentActivity extends AppCompatActivity
         cv.put("nameCompany", nameCompany.getEditText().getText().toString());
         cv.put("fio", fio.getEditText().getText().toString());
         cv.put("rang", rang.getEditText().getText().toString());
-        cv.put("img", buffer);
-        cv.put("isProvider", String.valueOf((provider.isChecked()) ? 1 : 0));
-        cv.put("isCustomer", String.valueOf((customer.isChecked()) ? 1 : 0));
+        cv.put("isPodryadchik", String.valueOf((provider.isChecked()) ? 1 : 0));
+        cv.put("isZakazchik", String.valueOf((customer.isChecked()) ? 1 : 0));
+        cv.put("isSubPodryadchik", String.valueOf((subprovider.isChecked()) ? 1 : 0));
+        cv.put("isUpolnomochOrg", String.valueOf((uorg.isChecked()) ? 1 : 0));
+        cv.put("isAvtNadzor", String.valueOf((avt_nadz.isChecked()) ? 1 : 0));
         cv.put("isEngineeringService", String.valueOf((engService.isChecked()) ? 1 : 0));
 
+        if(customer.isChecked()){
+            newRole = "заказчиком";
+        }
+        else if(provider.isChecked())
+        {
+            newRole = "подрядчиком";
+        }
+        else if(engService.isChecked()){
+            newRole = "инженерной службой";
+        }
+        else if(avt_nadz.isChecked()){
+            newRole = "авторским надзором";
+        }
+        else if(subprovider.isChecked()){
+            newRole = "субподрядчиком";
+        }
+        else if(uorg.isChecked()){
+            newRole = "уполномоченными органами";
+        }
         long rowID = db.update(dbHelper.getDatabaseName(), cv, "id="+String.valueOf(agent.id), null);
 
         if (rowID != -1)
         {
+
             Log.d("ADD_POS", (int) rowID + " editable");
             agent = new Agent(agent.id, id, nameCompany.getEditText().getText().toString(), rang.getEditText().getText().toString(), fio.getEditText().getText().toString(), provider.isChecked(),
-                            customer.isChecked(), engService.isChecked(), buffer);
-
+                    subprovider.isChecked(), customer.isChecked(), engService.isChecked(), avt_nadz.isChecked(), uorg.isChecked(), null);
             result = true;
         }
         else
@@ -304,14 +351,15 @@ public class AgentActivity extends AppCompatActivity
 
         db.close();
         dbHelper.close();
-
+        newAgent = nameCompany.getEditText().getText().toString() + "|" + rang.getEditText().getText().toString() + "|" + fio.getEditText().getText().toString() + "|" + newRole;
+        logsHelper.createLog(oldAgent, newAgent, LogsHelper.ACTION_EDIT);
         return result;
     }
     private boolean save()
     {
         boolean result = false;
 
-        DBHelper dbHelper = new DBHelper(getApplicationContext(), DBHelper.Agents);
+        DBHelper dbHelper = DBHelper.getInstance(getApplicationContext(), DBHelper.Agents);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         ContentValues cv = new ContentValues();
@@ -320,25 +368,39 @@ public class AgentActivity extends AppCompatActivity
         cv.put("nameCompany", nameCompany.getEditText().getText().toString());
         cv.put("fio", fio.getEditText().getText().toString());
         cv.put("rang", rang.getEditText().getText().toString());
-        Bitmap bm = mSignPad.getTransparentSignatureBitmap();
-        bm = getResizedBitmap(bm, 320, 240);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG, 100, out);
-        byte[] buffer = out.toByteArray();
-
-        cv.put("img", buffer);
-        cv.put("isProvider", String.valueOf((provider.isChecked()) ? 1 : 0));
-        cv.put("isCustomer", String.valueOf((customer.isChecked()) ? 1 : 0));
+        cv.put("isPodryadchik", String.valueOf((provider.isChecked()) ? 1 : 0));
+        cv.put("isZakazchik", String.valueOf((customer.isChecked()) ? 1 : 0));
+        cv.put("isSubPodryadchik", String.valueOf((subprovider.isChecked()) ? 1 : 0));
+        cv.put("isUpolnomochOrg", String.valueOf((uorg.isChecked()) ? 1 : 0));
+        cv.put("isAvtNadzor", String.valueOf((avt_nadz.isChecked()) ? 1 : 0));
         cv.put("isEngineeringService", String.valueOf((engService.isChecked()) ? 1 : 0));
 
         long rowID = db.insert(dbHelper.getDatabaseName(), null, cv);
-
+        if(customer.isChecked()){
+            newRole = "заказчиком";
+        }
+        else if(provider.isChecked())
+        {
+            newRole = "подрядчиком";
+        }
+        else if(engService.isChecked()){
+            newRole = "инженерной службой";
+        }
+        else if(avt_nadz.isChecked()){
+            newRole = "авторским надзором";
+        }
+        else if(subprovider.isChecked()){
+            newRole = "субподрядчиком";
+        }
+        else if(uorg.isChecked()){
+            newRole = "уполномоченными органами";
+        }
         if (rowID != 0)
         {
-            agent = new Agent((int) rowID, id, nameCompany.getEditText().getText().toString(), rang.getEditText().getText().toString(), fio.getEditText().getText().toString(),
-                    provider.isChecked(), customer.isChecked(), engService.isChecked(), buffer);
-            result = true;
 
+            agent = new Agent((int) rowID, id, nameCompany.getEditText().getText().toString(), rang.getEditText().getText().toString(), fio.getEditText().getText().toString(), provider.isChecked(),
+                    subprovider.isChecked(), customer.isChecked(), engService.isChecked(), avt_nadz.isChecked(), uorg.isChecked(), null);
+            result = true;
             Log.d("ADD_POS", (int) rowID + " ");
         }
         else
@@ -348,9 +410,12 @@ public class AgentActivity extends AppCompatActivity
             result = false;
         }
 
+
         db.close();
         dbHelper.close();
+        newAgent = nameCompany.getEditText().getText().toString() + "|" + rang.getEditText().getText().toString() + "|" + fio.getEditText().getText().toString() + "|" + newRole;
 
+        logsHelper.createLog("", newAgent, LogsHelper.ACTION_ADD);
         return result;
     }
 

@@ -14,8 +14,11 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Debug;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -27,8 +30,9 @@ import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
-
+import android.location.LocationListener;
 import com.gosproj.gosproject.Adapters.RVMainAdapter;
 import com.gosproj.gosproject.Functionals.DBHelper;
 import com.gosproj.gosproject.Functionals.NavigationDrawer;
@@ -52,10 +56,23 @@ public class MainActivity extends AppCompatActivity {
     Context context;
     Resources resources;
     Toolbar toolbar;
+    FloatingActionButton loadScan;
     RecyclerView recyclerView;
     RVMainAdapter rvMainAdapter;
     SharedPreferences pref = null;
     ArrayList<MainCategory> mainCategories = new ArrayList<MainCategory>();
+
+    public void checkPermission(){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                ){//Can add more as per requirement
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},
+                    123);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,17 +81,16 @@ public class MainActivity extends AppCompatActivity {
         activity = this;
         context = this;
         resources = getResources();
-        DBHelper db = new DBHelper(this, DBHelper.VidRabot);
-        Dexter.withActivity(this)
+        Dexter.withActivity(activity)
                 .withPermissions(
                         Manifest.permission.CAMERA,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
                         Manifest.permission.ACCESS_NETWORK_STATE,
                         Manifest.permission.INTERNET,
                         Manifest.permission.ACCESS_COARSE_LOCATION,
                         Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.READ_PHONE_STATE
+                        Manifest.permission.READ_PHONE_STATE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
                 ).withListener(new MultiplePermissionsListener() {
             @Override
             public void onPermissionsChecked(MultiplePermissionsReport report) {
@@ -84,6 +100,9 @@ public class MainActivity extends AppCompatActivity {
             public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
             }
         }).check();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkPermission();
+        }
         pref = getSharedPreferences("com.gosproj.gosproject", MODE_PRIVATE);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -92,7 +111,24 @@ public class MainActivity extends AppCompatActivity {
         new NavigationDrawer(context, activity, toolbar);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-
+        FloatingActionButton loadActs = (FloatingActionButton) findViewById(R.id.loadActs);
+        loadScan = (FloatingActionButton) findViewById(R.id.loadScan);
+        loadActs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                activity.getApplicationContext().startActivity(new Intent(activity.getApplicationContext(), LoadDept.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                activity.finish();
+            }
+        });
+        loadScan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                activity.getApplicationContext().startActivity(new Intent(activity.getApplicationContext(), QRForScanning.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                activity.finish();
+            }
+        });
         rvMainAdapter = new RVMainAdapter(activity, mainCategories);
         LinearLayoutManager llm = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(llm);

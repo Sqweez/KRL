@@ -7,7 +7,8 @@ import android.util.Log;
 
 public class DBHelper extends SQLiteOpenHelper
 {
-    public static final int DATABASE_VERSION = 21;
+    public static DBHelper mInstance = null;
+    public static final int DATABASE_VERSION = 43;
     public static String DATABASE_NAME = "";
 
     Context context;
@@ -22,8 +23,14 @@ public class DBHelper extends SQLiteOpenHelper
     public static String Videos = "Videos";
     public static String OfflineZip = "OfflineZip";
     public static String Users = "Users";
-    public static String VidRabot = "VidRabot";
+    public static String Logs = "Logs";
 
+    public static DBHelper getInstance(Context context, String name){
+        if(mInstance == null){
+            mInstance = new DBHelper(context.getApplicationContext(), name);
+        }
+        return mInstance;
+    }
     public DBHelper(Context context, String name)
     {
         super(context, name, null, DATABASE_VERSION);
@@ -44,6 +51,14 @@ public class DBHelper extends SQLiteOpenHelper
                         + "name text,"
                         + "rgu_name text,"
                         + "rgu_id integer"+ ");");
+                break;
+            case "Logs":
+                db.execSQL("create table "+ DATABASE_NAME +" ("
+                        + "id integer primary key autoincrement,"
+                        + "idDept integer,"
+                        + "lat double default 0,"
+                        + "long double default 0,"
+                        + "log_text text"+ ");");
                 break;
             case "VidRabot":
                 db.execSQL("create table "+ DATABASE_NAME +" ("
@@ -77,14 +92,13 @@ public class DBHelper extends SQLiteOpenHelper
                 db.execSQL("create table "+ DATABASE_NAME +" ("
                         + "id integer primary key autoincrement,"
                         + "idDept integer,"
-                        + "value text" + ");");
+                        + "name text" + ");");
                 break;
             case "Probs":
                 db.execSQL("create table "+ DATABASE_NAME +" ("
                         + "id integer primary key autoincrement,"
                         + "idDept integer,"
                         + "name text,"
-                        + "count integer,"
                         + "size text,"
                         + "place text,"
                         + "provider text,"
@@ -94,9 +108,7 @@ public class DBHelper extends SQLiteOpenHelper
                 db.execSQL("create table "+ DATABASE_NAME +" ("
                         + "id integer primary key autoincrement,"
                         + "idDept integer,"
-                        + "name text,"
-                        + "kilometr text,"
-                        + "comment text" + ");");
+                        + "name text" + ");");
                 break;
             case "Agents":
                 db.execSQL("create table "+ DATABASE_NAME +" ("
@@ -106,8 +118,12 @@ public class DBHelper extends SQLiteOpenHelper
                         + "fio text,"
                         + "rang text,"
                         + "img blob,"
-                        + "isProvider integer,"
-                        + "isCustomer integer,"
+                        + "isSubPodryadchik integer,"
+                        + "isAvtNadzor integer,"
+                        + "isUpolnomochOrg integer,"
+                        + "isPodryadchik integer,"
+                        + "isZakazchik integer,"
+                        + "isRGU integer default 0,"
                         + "isEngineeringService integer" + ");");
                 break;
             case "Photos":

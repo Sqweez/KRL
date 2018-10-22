@@ -67,8 +67,9 @@ public class RVOtborProbAdapter extends RecyclerView.Adapter<RVOtborProbAdapter.
     @Override
     public void onBindViewHolder(final RVOtborProbAdapter.ViewHolder holder, final int position)
     {
-        holder.name.setText(probs.get(position).name);
-        holder.value.setText(String.valueOf(probs.get(position).size));
+        String value = probs.get(position).name + " (" + String.valueOf(probs.get(position).size) + ")";
+        holder.name.setText(value);
+        holder.value.setText(probs.get(position).place);
         holder.checkBox.setChecked(false);
 
         if (!select)

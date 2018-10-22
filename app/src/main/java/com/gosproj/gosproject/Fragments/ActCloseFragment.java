@@ -59,6 +59,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
@@ -76,6 +77,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
@@ -89,10 +91,11 @@ public class ActCloseFragment extends Fragment
     String name;
     int id;
     int actID;
-
+    TextView text;
     TextView act;
     Button buttonClose;
-
+    Button buttonCloseWS;
+    byte[] img;
     private static final Random random = new Random();
     private static final String CHARS = "ABCDEFGHJKLMNOPQRSTUVWXYZ";
 
@@ -108,7 +111,35 @@ public class ActCloseFragment extends Fragment
 
     public ActCloseFragment()
     {}
-
+    public void checkSigns(){
+        boolean isAllSigned = false;
+        DBHelper dbHelper = new DBHelper(context, DBHelper.Agents);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + DBHelper.Agents + " WHERE idDept = ?", new String[]{String.valueOf(id)});
+        if(cursor.moveToFirst()) {
+            do{
+               img = cursor.getBlob(cursor.getColumnIndex("img"));
+               if(img == null){
+                   isAllSigned = false;
+                   break;
+               }
+               else{
+                   isAllSigned = true;
+               }
+            }
+            while (cursor.moveToNext());
+        }
+        if(isAllSigned){
+            buttonCloseWS.setVisibility(View.GONE);
+            text.setVisibility(TextView.INVISIBLE);
+            buttonClose.setEnabled(true);
+        }
+    }
+    @Override
+    public void onResume(){
+        super.onResume();
+        checkSigns();
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState)
     {
@@ -117,37 +148,50 @@ public class ActCloseFragment extends Fragment
         activity = this.getActivity();
         context = activity.getApplicationContext();
         resources = activity.getResources();
+        text = (TextView) view.findViewById(R.id.warningAboutButton);
 
+        text.setText("Кнопка закрыть акт будет недоступна, пока все присутствующие не поставят подпись");
         act = (TextView) view.findViewById(R.id.act);
         buttonClose = (Button) view.findViewById(R.id.closeAct);
-
-        act.setText(name);
-
+        buttonCloseWS = (Button) view.findViewById(R.id.closeActWithoutSigning);
+        Date date = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+        String actNameAndDate = name + "\n" + format.format(date);
+        act.setText(actNameAndDate);
+        buttonCloseWS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                closeAct();
+            }
+        });
         buttonClose.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                DBHelper dbHelper = new DBHelper(context, DBHelper.DEPARTURE);
-                SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-                Cursor cursor = db.rawQuery("UPDATE Departures SET isClose = ?" +
-                        "WHERE id = ?", new String[]{String.valueOf(1) ,String.valueOf(id)});
-
-                cursor.moveToFirst();
-                cursor.close();
-
-                db.close();
-                dbHelper.close();
-
-                activity.startService(new Intent(activity, CreateAndLoadService.class).putExtra("id", id));
-
-                Intent intent = new Intent(activity, MainActivity.class);
-                activity.startActivity(intent);
-                activity.finish();
+                closeAct();
             }
         });
 
         return view;
+    }
+    private void closeAct(){
+        DBHelper dbHelper = new DBHelper(context, DBHelper.DEPARTURE);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery("UPDATE Departures SET isClose = ?" +
+                "WHERE id = ?", new String[]{String.valueOf(1) ,String.valueOf(id)});
+
+        cursor.moveToFirst();
+        cursor.close();
+
+        db.close();
+        dbHelper.close();
+
+        activity.startService(new Intent(activity, CreateAndLoadService.class).putExtra("id", id));
+
+        Intent intent = new Intent(activity, MainActivity.class);
+        activity.startActivity(intent);
+        activity.finish();
     }
 }

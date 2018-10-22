@@ -12,19 +12,36 @@ public class Agent implements Parcelable
     public String rang;
     public String fio;
     public byte[] blob;
-    public boolean isProvider;
-    public boolean isCustomer;
+    public boolean isPodryadchik;
+    public boolean isZakazchik;
     public boolean isEngineeringService;
+    public boolean isSubPodryadchik;
+    public boolean isAvtNadzor;
+    public boolean isUpolnomochOrg;
 
-    public Agent(int id, int idDept, String nameCompany, String rang, String fio, boolean isProvider, boolean isCustomer, boolean isEngineeringSerice, byte[] blob)
+    public Agent(int id,
+                 int idDept,
+                 String nameCompany,
+                 String rang,
+                 String fio,
+                 boolean isPodryadchik,
+                 boolean isSubPodryadchik,
+                 boolean isZakazchik,
+                 boolean isEngineeringSerice,
+                 boolean isAvtNadzor,
+                 boolean isUpolnomochOrg,
+                 byte[] blob)
     {
         this.id = id;
         this.idDept = idDept;
         this.nameCompany = nameCompany;
         this.rang = rang;
         this.fio = fio;
-        this.isProvider = isProvider;
-        this.isCustomer = isCustomer;
+        this.isPodryadchik = isPodryadchik;
+        this.isZakazchik = isZakazchik;
+        this.isSubPodryadchik = isSubPodryadchik;
+        this.isAvtNadzor = isAvtNadzor;
+        this.isUpolnomochOrg = isUpolnomochOrg;
         this.isEngineeringService = isEngineeringSerice;
         this.blob = blob;
     }
@@ -36,8 +53,11 @@ public class Agent implements Parcelable
         rang = in.readString();
         fio = in.readString();
         blob = in.createByteArray();
-        isProvider = in.readByte() != 0;
-        isCustomer = in.readByte() != 0;
+        isPodryadchik = in.readByte() != 0;
+        isSubPodryadchik = in.readByte() != 0;
+        isZakazchik = in.readByte() != 0;
+        isAvtNadzor = in.readByte() != 0;
+        isUpolnomochOrg = in.readByte() != 0;
         isEngineeringService = in.readByte() != 0;
     }
 
@@ -66,8 +86,11 @@ public class Agent implements Parcelable
         dest.writeString(rang);
         dest.writeString(fio);
         dest.writeByteArray(blob);
-        dest.writeByte((byte) (isProvider ? 1 : 0));
-        dest.writeByte((byte) (isCustomer ? 1 : 0));
+        dest.writeByte((byte) (isPodryadchik ? 1 : 0));
+        dest.writeByte((byte) (isSubPodryadchik ? 1 : 0));
+        dest.writeByte((byte) (isZakazchik ? 1 : 0));
+        dest.writeByte((byte) (isAvtNadzor ? 1 : 0));
+        dest.writeByte((byte) (isUpolnomochOrg ? 1 : 0));
         dest.writeByte((byte) (isEngineeringService ? 1 : 0));
     }
 }

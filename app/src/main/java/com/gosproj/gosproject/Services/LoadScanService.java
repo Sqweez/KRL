@@ -302,7 +302,7 @@ public class LoadScanService extends Service {
             if (isOnline()) {
                 try {
                     File file = new File(pathZip);
-                    boolean result = new ServerApi().UpLoadFile(file);
+                    boolean result = new ServerApi(ServerApi.ACTION_LOAD_SCANS).UpLoadFile(file);
 
                     if (!result) {
                         addPath(pathZip);

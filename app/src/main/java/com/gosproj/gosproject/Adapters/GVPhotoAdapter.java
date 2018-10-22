@@ -20,6 +20,7 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.gosproj.gosproject.Functionals.PhotoRequestHandler;
 import com.gosproj.gosproject.Functionals.VideoRequestHandler;
@@ -28,6 +29,8 @@ import com.gosproj.gosproject.Structures.Agent;
 import com.gosproj.gosproject.Structures.Photo;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -98,7 +101,7 @@ public class GVPhotoAdapter extends BaseAdapter
                     R.layout.photo_item, null);
             holder.image = (ImageView) convertView.findViewById(R.id.photo);
             holder.checkBox = (CheckBox) convertView.findViewById(R.id.checkbox);
-
+            holder.textView = (TextView) convertView.findViewById(R.id.countOfScanTv);
             convertView.setTag(holder);
         }
         else
@@ -175,6 +178,8 @@ public class GVPhotoAdapter extends BaseAdapter
 
         holder.checkBox.setChecked(thumbnailsselection[position]);
         holder.id = position;
+        String numberOfImg = String.valueOf(holder.id + 1);
+        holder.textView.setText(numberOfImg);
         return convertView;
     }
 
@@ -238,6 +243,7 @@ public class GVPhotoAdapter extends BaseAdapter
     {
         public ImageView image;
         public CheckBox checkBox;
+        public TextView textView;
         int id;
     }
 }

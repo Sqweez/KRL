@@ -32,41 +32,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/name_def"
+                    android:minLines="1"
                     android:theme="@style/EditTextTheme"
                     android:textColorHint="#9E9E9E"
                     android:textColor="#717171"
-                    android:inputType="text"/>
+                    android:inputType="textMultiLine"/>
             </android.support.design.widget.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/killo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <EditText
-                    android:id="@+id/edit_text_killo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/kilo_def"
-                    android:theme="@style/EditTextTheme"
-                    android:inputType="text"
-                    android:textColorHint="#9E9E9E"
-                    android:textColor="#717171"/>
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/comment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <EditText
-                    android:id="@+id/edit_text_comment"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/coment_def"
-                    android:theme="@style/EditTextTheme"
-                    android:inputType="text"
-                    android:textColorHint="#9E9E9E"
-                    android:textColor="#717171"/>
-            </android.support.design.widget.TextInputLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

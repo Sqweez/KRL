@@ -6,26 +6,43 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/act"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Дорога А-01 (Кустанай-Рудный)\n10-25 км, текущий ремонт"
-        android:textSize="18sp"
-        android:id="@+id/act"
-        android:background="@color/colorPrimary"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="38dp"
         android:padding="16dp"
-        android:textColor="@color/md_white_1000"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:text="Дорога А-01 (Кустанай-Рудный)\n10-25 км, текущий ремонт"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/warningAboutButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/closeAct"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:text="@string/untilSigns" />
 
     <Button
-        android:layout_width="match_parent"
+        android:id="@+id/closeAct"
+        android:layout_width="339dp"
         android:layout_height="wrap_content"
-        android:text="Закрыть акт"
-        android:backgroundTint="@color/colorPrimary"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_margin="16dp"
-        android:id="@+id/closeAct"/>
+        android:layout_marginBottom="75dp"
+        android:enabled="false"
+        android:backgroundTint="@color/colorPrimary"
+        android:text="Закрыть акт" />
 
+    <Button
+        android:id="@+id/closeActWithoutSigning"
+        android:layout_width="339dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:text="Закрыть акт без подписания" />
 </RelativeLayout>

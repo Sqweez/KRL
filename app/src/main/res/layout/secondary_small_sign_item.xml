@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:id="@+id/root">
+
+         <!--<CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:theme="@style/CustomCheckBox"
+            android:layout_marginRight="16dp"
+            android:id="@+id/checkbox"
+             android:enabled="false"
+            android:layout_marginLeft="16dp"/>-->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Дорога А-01 (Кустанай-Рудный\n10-25 км, текущий ремонт"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:paddingRight="18dp"
+            android:paddingLeft="18dp"
+            android:id="@+id/primaryText"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:textColor="#808080"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="✓"
+            android:textSize="30sp"
+            android:id="@+id/secondaryText"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:textColor="#808080"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:background="@color/gray"
+        android:layout_marginRight="16dp"
+        android:layout_marginLeft="16dp"/>
+
+</LinearLayout>

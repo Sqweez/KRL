@@ -12,12 +12,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.gosproj.gosproject.Functionals.DBHelper;
+import com.gosproj.gosproject.Services.LogsHelper;
 import com.gosproj.gosproject.Structures.Proba;
 
 import java.util.ArrayList;
@@ -31,16 +33,17 @@ public class ProbaActivity extends AppCompatActivity
     Toolbar toolbar;
 
     TextInputLayout name;
-    TextInputLayout count;
     TextInputLayout size;
     TextInputLayout place;
     TextInputLayout provider;
     TextInputLayout typeWork;
-
+    String old_proba;
+    String new_proba;
     Button save;
     Button saveAndAddNew;
 
     int id;
+    LogsHelper logsHelper;
     Proba proba;
 
     ArrayList<Proba> returnProbs = new ArrayList<Proba>();
@@ -58,6 +61,7 @@ public class ProbaActivity extends AppCompatActivity
         context = this;
         resources = getResources();
 
+        logsHelper = new LogsHelper(LogsHelper.PROBA, context, activity, id);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(resources.getString(R.string.app_name));
@@ -65,7 +69,6 @@ public class ProbaActivity extends AppCompatActivity
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white);
 
         name = (TextInputLayout) findViewById(R.id.name);
-        count = (TextInputLayout) findViewById(R.id.count);
         size = (TextInputLayout) findViewById(R.id.size);
         place = (TextInputLayout) findViewById(R.id.place);
         provider = (TextInputLayout) findViewById(R.id.provider);
@@ -73,16 +76,14 @@ public class ProbaActivity extends AppCompatActivity
 
         save = (Button) findViewById(R.id.save);
         saveAndAddNew = (Button) findViewById(R.id.saveAndAddNew);
-
         if (proba != null)
         {
             name.getEditText().setText(proba.name);
-            count.getEditText().setText(String.valueOf(proba.count));
             size.getEditText().setText(String.valueOf(proba.size));
             place.getEditText().setText(proba.place);
             provider.getEditText().setText(proba.provider);
             typeWork.getEditText().setText(proba.typeWork);
-
+            old_proba = proba.name + "|" + proba.size + "|" + proba.place + "|" + proba.provider + "|" + proba.typeWork;
             save.setText(resources.getString(R.string.edit));
             saveAndAddNew.setText(resources.getString(R.string.editAddNew));
 
@@ -110,8 +111,7 @@ public class ProbaActivity extends AppCompatActivity
 
         if (!name.getEditText().getText().toString().equals(""))
         {
-            if (!count.getEditText().getText().toString().equals(""))
-            {
+
                 if (!size.getEditText().getText().toString().equals(""))
                 {
                     if (!place.getEditText().getText().toString().equals(""))
@@ -126,7 +126,6 @@ public class ProbaActivity extends AppCompatActivity
                     }
                 }
             }
-        }
 
         return isT;
     }
@@ -147,7 +146,6 @@ public class ProbaActivity extends AppCompatActivity
         if (clickSave())
         {
             name.getEditText().setText("");
-            count.getEditText().setText("");
             size.getEditText().setText("");
             place.getEditText().setText("");
             provider.getEditText().setText("");
@@ -199,13 +197,13 @@ public class ProbaActivity extends AppCompatActivity
         DBHelper dbHelper = new DBHelper(getApplicationContext(), DBHelper.PROBS);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        Cursor cursor = db.rawQuery("UPDATE Probs SET name = ?, count = ?, size = ?, place = ?,  provider = ?, typeWork = ?" +
-                        "WHERE id = ?", new String[]{ name.getEditText().getText().toString(), count.getEditText().getText().toString(), size.getEditText().getText().toString(),
+        Cursor cursor = db.rawQuery("UPDATE Probs SET name = ?, size = ?, place = ?,  provider = ?, typeWork = ?" +
+                        "WHERE id = ?", new String[]{ name.getEditText().getText().toString(), size.getEditText().getText().toString(),
                         place.getEditText().getText().toString(), provider.getEditText().getText().toString(), typeWork.getEditText().getText().toString(), String.valueOf(proba.id)});
 
         if (cursor != null)
         {
-            returnProbs.add(new Proba(proba.id, id, name.getEditText().getText().toString(), Integer.parseInt(count.getEditText().getText().toString()), size.getEditText().getText().toString(),
+            returnProbs.add(new Proba(proba.id, id, name.getEditText().getText().toString(), size.getEditText().getText().toString(),
                     place.getEditText().getText().toString(), provider.getEditText().getText().toString(), typeWork.getEditText().getText().toString()));
 
             result = true;
@@ -222,6 +220,9 @@ public class ProbaActivity extends AppCompatActivity
 
         db.close();
         dbHelper.close();
+        new_proba = name.getEditText().getText().toString() + "|" + size.getEditText().getText().toString() + "|" +
+                place.getEditText().getText().toString() + "|" + provider.getEditText().getText().toString() + "|" + typeWork.getEditText().getText().toString();
+        logsHelper.createLog(old_proba, new_proba, LogsHelper.ACTION_EDIT);
 
         return result;
     }
@@ -237,7 +238,6 @@ public class ProbaActivity extends AppCompatActivity
 
         cv.put("idDept", String.valueOf(id));
         cv.put("name", name.getEditText().getText().toString());
-        cv.put("count", count.getEditText().getText().toString());
         cv.put("size", size.getEditText().getText().toString());
         cv.put("place", place.getEditText().getText().toString());
         cv.put("provider", provider.getEditText().getText().toString());
@@ -247,7 +247,7 @@ public class ProbaActivity extends AppCompatActivity
 
         if (rowID != 0)
         {
-            returnProbs.add(new Proba((int) rowID, id, name.getEditText().getText().toString(), Integer.parseInt(count.getEditText().getText().toString()),size.getEditText().getText().toString(),
+            returnProbs.add(new Proba((int) rowID, id, name.getEditText().getText().toString(), size.getEditText().getText().toString(),
                     place.getEditText().getText().toString(), provider.getEditText().getText().toString(), typeWork.getEditText().getText().toString()));
 
             result = true;
@@ -261,7 +261,9 @@ public class ProbaActivity extends AppCompatActivity
 
         db.close();
         dbHelper.close();
-
+        new_proba = name.getEditText().getText().toString() + "|" + size.getEditText().getText().toString() + "|" +
+                place.getEditText().getText().toString() + "|" + provider.getEditText().getText().toString() + "|" + typeWork.getEditText().getText().toString();
+        logsHelper.createLog("", new_proba, LogsHelper.ACTION_ADD);
         return result;
     }
 

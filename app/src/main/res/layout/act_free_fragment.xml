@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
     <TextView
         android:layout_width="match_parent"
@@ -13,25 +13,13 @@
         android:gravity="center"
         android:textStyle="bold"
         android:textSize="20sp"
-        android:layout_marginBottom="16dp"
-        android:id="@+id/title"/>
+        android:id="@+id/title"
+        android:padding="16dp"/>
 
-    <View
+    <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/gray"
-        android:layout_below="@+id/title"
-        android:id="@+id/line"/>
-
-   <EditText
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-       android:layout_below="@+id/line"
-       android:hint="\nВведите замеры\n"
-       android:textColorHint="#9E9E9E"
-       android:textColor="#717171"
-       android:id="@+id/editText"
-       android:theme="@style/EditTextTheme"
-       android:gravity="center_vertical"/>
+        android:layout_height="match_parent"
+        android:id="@+id/recyclerView"
+        android:layout_below="@+id/title"/>
 
 </RelativeLayout>

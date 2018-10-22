@@ -26,6 +26,7 @@ import com.gosproj.gosproject.Functionals.DBHelper;
 import com.gosproj.gosproject.Interfaces.RVOnClickInterface;
 import com.gosproj.gosproject.ProbaActivity;
 import com.gosproj.gosproject.R;
+import com.gosproj.gosproject.Services.LogsHelper;
 import com.gosproj.gosproject.Structures.MainCategory;
 import com.gosproj.gosproject.Structures.Proba;
 import com.gosproj.gosproject.Structures.SecondaryCategory;
@@ -42,6 +43,8 @@ public class ActFourFragment extends Fragment implements RVOnClickInterface<Prob
     Context context;
     Resources resources;
     Activity activity;
+
+    LogsHelper logsHelper;
 
     RecyclerView recyclerView;
 
@@ -72,6 +75,8 @@ public class ActFourFragment extends Fragment implements RVOnClickInterface<Prob
         context = activity.getApplicationContext();
         resources = activity.getResources();
 
+        logsHelper = new LogsHelper(LogsHelper.PROBA, context, activity, id);
+
         probs.clear();
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
@@ -81,6 +86,7 @@ public class ActFourFragment extends Fragment implements RVOnClickInterface<Prob
 
         Cursor cursor = db.rawQuery("SELECT * FROM " + DBHelper.PROBS + " WHERE idDept = ?", new String[]{String.valueOf(id)});
 
+
         if (cursor.moveToFirst())
         {
             do
@@ -88,13 +94,12 @@ public class ActFourFragment extends Fragment implements RVOnClickInterface<Prob
                 int id = cursor.getInt(cursor.getColumnIndex("id"));
                 int idDept = cursor.getInt(cursor.getColumnIndex("idDept"));
                 String name = cursor.getString(cursor.getColumnIndex("name"));
-                int count = cursor.getInt(cursor.getColumnIndex("count"));
                 String size = cursor.getString(cursor.getColumnIndex("size"));
                 String place = cursor.getString(cursor.getColumnIndex("place"));
                 String provider = cursor.getString(cursor.getColumnIndex("provider"));
                 String typeWork = cursor.getString(cursor.getColumnIndex("typeWork"));
 
-                probs.add(new Proba(id, idDept, name, count, size, place, provider, typeWork));
+                probs.add(new Proba(id, idDept, name, size, place, provider, typeWork));
             }
             while (cursor.moveToNext());
         }
@@ -177,6 +182,9 @@ public class ActFourFragment extends Fragment implements RVOnClickInterface<Prob
 
         for (int i=0; i<removes.size(); i++)
         {
+            String old_proba = removes.get(i).name + "|" + removes.get(i).size
+                    + "|" + removes.get(i).place + "|" + removes.get(i).provider + "|" + removes.get(i).typeWork;
+            logsHelper.createLog(old_proba, "", LogsHelper.ACTION_DELETE);
             int delCount = db.delete(DBHelper.PROBS, "id = ?",
                     new String[]{String.valueOf(removes.get(i).id)});
         }

@@ -1,20 +1,13 @@
 package com.gosproj.gosproject.Adapters;
 
-import android.animation.Animator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
@@ -23,13 +16,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.gosproj.gosproject.ActActivity;
 import com.gosproj.gosproject.Interfaces.RVOnClickInterface;
 import com.gosproj.gosproject.R;
 import com.gosproj.gosproject.Structures.Agent;
-import com.gosproj.gosproject.Structures.Defects;
 import com.gosproj.gosproject.Structures.MainAgentCategory;
-import com.gosproj.gosproject.Structures.SecondaryCategory;
 
 import java.util.ArrayList;
 
@@ -103,6 +93,7 @@ public class RVAgentAdapter extends RecyclerView.Adapter<RVAgentAdapter.ViewHold
                 textView.setText(agents.get(position).agents.get(i).nameCompany + "\n" + agents.get(position).agents.get(i).rang + "\n" + agents.get(position).agents.get(i).fio);
 
                 checkBox.setChecked(false);
+                checkBox.setVisibility(View.GONE);
 
                 if (!select)
                 {
@@ -124,6 +115,7 @@ public class RVAgentAdapter extends RecyclerView.Adapter<RVAgentAdapter.ViewHold
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         if (isChecked)
                         {
+                            if(agents.get(position).agents.get(finalI).blob == null)
                             removes.add(agents.get(position).agents.get(finalI));
                         }
                         else
@@ -241,10 +233,9 @@ public class RVAgentAdapter extends RecyclerView.Adapter<RVAgentAdapter.ViewHold
     public ArrayList<Agent> removeElements()
     {
         select = false;
-
         for (int i = 0; i<removes.size(); i++)
         {
-            if (removes.get(i).isProvider)
+            if (removes.get(i).isPodryadchik)
             {
                 for (int l = 0; l<agents.get(0).agents.size(); l++)
                 {
@@ -254,7 +245,7 @@ public class RVAgentAdapter extends RecyclerView.Adapter<RVAgentAdapter.ViewHold
                     }
                 }
             }
-            else if (removes.get(i).isCustomer)
+            else if (removes.get(i).isZakazchik)
             {
                 for (int l = 0; l<agents.get(1).agents.size(); l++)
                 {
@@ -271,6 +262,36 @@ public class RVAgentAdapter extends RecyclerView.Adapter<RVAgentAdapter.ViewHold
                     if (removes.get(i).id == agents.get(2).agents.get(l).id)
                     {
                         agents.get(2).agents.remove(l);
+                    }
+                }
+            }
+            else if (removes.get(i).isUpolnomochOrg)
+            {
+                for (int l = 0; l<agents.get(4).agents.size(); l++)
+                {
+                    if (removes.get(i).id == agents.get(4).agents.get(l).id)
+                    {
+                        agents.get(4).agents.remove(l);
+                    }
+                }
+            }
+            else if (removes.get(i).isAvtNadzor)
+            {
+                for (int l = 0; l<agents.get(5).agents.size(); l++)
+                {
+                    if (removes.get(i).id == agents.get(5).agents.get(l).id)
+                    {
+                        agents.get(5).agents.remove(l);
+                    }
+                }
+            }
+            else if (removes.get(i).isSubPodryadchik)
+            {
+                for (int l = 0; l<agents.get(3).agents.size(); l++)
+                {
+                    if (removes.get(i).id == agents.get(3).agents.get(l).id)
+                    {
+                        agents.get(3).agents.remove(l);
                     }
                 }
             }

@@ -28,6 +28,8 @@ import com.gosproj.gosproject.R;
 import com.gosproj.gosproject.Structures.Act;
 import com.gosproj.gosproject.Structures.Agent;
 import com.gosproj.gosproject.Structures.Defects;
+import com.gosproj.gosproject.Structures.LogStruct;
+import com.gosproj.gosproject.Structures.Measurment;
 import com.gosproj.gosproject.Structures.Photo;
 import com.gosproj.gosproject.Structures.Proba;
 import com.gosproj.gosproject.Structures.Videos;
@@ -44,6 +46,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedWriter;
+import java.io.Console;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -120,19 +123,19 @@ public class CreateAndLoadService extends Service
         String pathAgentInfo = createAgentFile(id);
         String pathPhotos = createPhotoFile(id);
         String pathVideos = createVideoFile(id);
+        String pathLogs = createLogFile(id);
+        String pathZamety = createZamerFile(id);
 
         File sdPath = Environment.getExternalStorageDirectory();
         sdPath = new File(sdPath.getAbsolutePath() + "/Android/data/com.gosproj.gosproject/archives/");
         sdPath.mkdir();
 
         File rootFolder = Environment.getExternalStorageDirectory();
-        rootFolder = new File(rootFolder.getAbsolutePath() + "/Android/data/com.gosproj.gosproject/"+String.valueOf(id));
+        rootFolder = new File(rootFolder.getAbsolutePath() + "/Android/data/com.gosproj.gosproject/"+String.valueOf(id) + "");
         rootFolder.mkdirs();
 
         String token = getToken(3);
-
         rootFolder.renameTo(new File(rootFolder.getAbsolutePath() + "/Android/data/com.gosproj.gosproject/"+token));
-
         try
         {
             DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
@@ -141,7 +144,6 @@ public class CreateAndLoadService extends Service
             String pathZip = sdPath.getAbsolutePath() + "/"+String.valueOf(actID)+"-"+date+"-"+token+".zip";
 
             ZipFile zipFile = new ZipFile(pathZip);
-            Log.d("MYLOGAWESOME", "KEKS " + zipFile);
             ZipParameters parameters = new ZipParameters();
             parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
 
@@ -154,9 +156,7 @@ public class CreateAndLoadService extends Service
             parameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_256);
 
             parameters.setPassword("123");
-
             zipFile.addFolder(rootFolder, parameters);
-            Log.d("MYLOGAWESOME", "SHMEKS " + zipFile);
             deleteRecursive(rootFolder);
 
             return pathZip;
@@ -196,6 +196,63 @@ public class CreateAndLoadService extends Service
         fileOrDirectory.delete();
     }
 
+    public String createZamerFile(int id){
+        ArrayList<Measurment>zamery = new ArrayList<Measurment>();
+        DBHelper dbHelper = new DBHelper(context, DBHelper.MEASUREMENTS);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM Measurements WHERE idDept = ?", new String[]{String.valueOf(id)});
+        if(cursor.moveToFirst()){
+            do{
+                int ids = cursor.getInt(cursor.getColumnIndex("id"));
+                int idDept = cursor.getInt(cursor.getColumnIndex("idDept"));
+                String name = cursor.getString(cursor.getColumnIndex("name"));
+                zamery.add(new Measurment(ids, idDept, name));
+            }
+            while(cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        dbHelper.close();
+
+        JSONArray zamer = new JSONArray();
+
+        try
+        {
+            for (int i=0; i<zamery.size(); i++)
+            {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("name", zamery.get(i).name);
+                zamer.put(jsonObject);
+            }
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+
+            return "";
+        }
+
+        if(!zamer.toString().equals("")){
+            File sdPath = Environment.getExternalStorageDirectory();
+            sdPath = new File(sdPath.getAbsolutePath() + "/Android/data/com.gosproj.gosproject/"+String.valueOf(id));
+            sdPath.mkdirs();
+            File sdFile = new File(sdPath, "info_zamery.ini");
+            try{
+                BufferedWriter bw = new BufferedWriter(new FileWriter(sdFile));
+                bw.write(zamer.toString());
+                bw.close();
+
+                return sdFile.getAbsolutePath();
+            }catch (IOException e){
+                e.printStackTrace();
+                return "";
+            }
+        }
+        else{
+            return "";
+        }
+
+    }
     public String createActFile(int id)
     {
         Act act = new Act();
@@ -209,14 +266,22 @@ public class CreateAndLoadService extends Service
         {
             act.id = cursor.getInt(cursor.getColumnIndex("id"));
             act.idAct = cursor.getInt(cursor.getColumnIndex("idAct"));
+            act.idNomer = cursor.getInt(cursor.getColumnIndex("idNomer"));
             act.date = cursor.getString(cursor.getColumnIndex("date"));
             act.object = cursor.getString(cursor.getColumnIndex("object"));
+            act.id_rabot = cursor.getInt(cursor.getColumnIndex("id_rabot"));
             act.vid_rabot = cursor.getString(cursor.getColumnIndex("vid_rabot"));
-            act.rgu = cursor.getString(cursor.getColumnIndex("rgu"));
-            act.rgu = act.rgu.replace ("&quot;", "\"");
             act.ispolnitel = cursor.getString(cursor.getColumnIndex("ispolnitel"));
             act.gruppa_vyezda1 = cursor.getString(cursor.getColumnIndex("gruppa_vyezda1"));
+            act.gruppa_vyezda2 = cursor.getString(cursor.getColumnIndex("gruppa_vyezda2"));
+            act.gruppa_vyezda3 = cursor.getString(cursor.getColumnIndex("gruppa_vyezda3"));
             act.podradchyk = cursor.getString(cursor.getColumnIndex("podradchyk"));
+            act.subpodradchyk = cursor.getString(cursor.getColumnIndex("subpodradchyk"));
+            act.avt_nadzor = cursor.getString(cursor.getColumnIndex("avt_nadzor"));
+            act.inj_sluzhby = cursor.getString(cursor.getColumnIndex("inj_sluzhby"));
+            act.uorg = cursor.getString(cursor.getColumnIndex("uorg"));
+            act.zakazchik = cursor.getString(cursor.getColumnIndex("zakazchik"));
+            act.rgu = cursor.getString(cursor.getColumnIndex("rgu_name"));
 
             actID = act.idAct;
         }
@@ -225,38 +290,13 @@ public class CreateAndLoadService extends Service
         db.close();
         dbHelper.close();
 
-        String zamery = "";
-
-        DBHelper dbHelperM = new DBHelper(context, DBHelper.MEASUREMENTS);
-        SQLiteDatabase dbM = dbHelperM.getWritableDatabase();
-
-        Cursor cursorM = dbM.rawQuery("SELECT * FROM Measurements WHERE idDept = ?", new String[]{String.valueOf(id)});
-
-        if (cursorM.moveToFirst())
-        {
-            zamery = cursorM.getString(cursorM.getColumnIndex("value"));
-        }
-
-        cursorM.close();
-        dbM.close();
-        dbHelperM.close();
-
         JSONObject obj = new JSONObject();
 
-        zamery = StringEscapeUtils.unescapeHtml4(zamery);
-        zamery = zamery.replaceAll("\\n", "");
 
         try
         {
             obj.put("idAct", act.idAct);
             obj.put("date", act.date);
-            obj.put("object", act.object);
-            obj.put("vid_rabot", act.vid_rabot);
-            obj.put("rgu", act.rgu);
-            obj.put("ispolnitel", act.ispolnitel);
-            obj.put("gruppa_vyezda1", act.gruppa_vyezda1);
-            obj.put("podradchyk", act.podradchyk);
-            obj.put("measurements", zamery);
         }
         catch (JSONException e)
         {
@@ -307,13 +347,12 @@ public class CreateAndLoadService extends Service
                 int ids = cursor.getInt(cursor.getColumnIndex("id"));
                 int idDept = cursor.getInt(cursor.getColumnIndex("idDept"));
                 String name = cursor.getString(cursor.getColumnIndex("name"));
-                int count = cursor.getInt(cursor.getColumnIndex("count"));
                 String size = cursor.getString(cursor.getColumnIndex("size"));
                 String place = cursor.getString(cursor.getColumnIndex("place"));
                 String provider = cursor.getString(cursor.getColumnIndex("provider"));
                 String typeWork = cursor.getString(cursor.getColumnIndex("typeWork"));
 
-                probas.add(new Proba(ids, idDept, name, count, size, place, provider, typeWork));
+                probas.add(new Proba(ids, idDept, name, size, place, provider, typeWork));
             }
             while (cursor.moveToNext());
         }
@@ -330,7 +369,6 @@ public class CreateAndLoadService extends Service
             {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("name", probas.get(i).name);
-                jsonObject.put("count", probas.get(i).count);
                 jsonObject.put("size", probas.get(i).size);
                 jsonObject.put("place", probas.get(i).place);
                 jsonObject.put("provider", probas.get(i).provider);
@@ -390,10 +428,8 @@ public class CreateAndLoadService extends Service
                 int ids = cursor.getInt(cursor.getColumnIndex("id"));
                 int idDept = cursor.getInt(cursor.getColumnIndex("idDept"));
                 String name = cursor.getString(cursor.getColumnIndex("name"));
-                String kilometr = cursor.getString(cursor.getColumnIndex("kilometr"));
-                String comment = cursor.getString(cursor.getColumnIndex("comment"));
 
-                defectses.add(new Defects(ids, idDept, name, kilometr, comment));
+                defectses.add(new Defects(ids, idDept, name));
             }
             while (cursor.moveToNext());
         }
@@ -409,8 +445,6 @@ public class CreateAndLoadService extends Service
             {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("name", defectses.get(i).name);
-                jsonObject.put("kilometr", defectses.get(i).kilometr);
-                jsonObject.put("comment", defectses.get(i).comment);
 
                 defects.put(jsonObject);
             }
@@ -449,6 +483,73 @@ public class CreateAndLoadService extends Service
             return "";
         }
     }
+    public String createLogFile(int id){
+
+        ArrayList<LogStruct> logs = new ArrayList<LogStruct>();
+
+        DBHelper dbHelper = new DBHelper(context, DBHelper.Logs);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + DBHelper.Logs + " WHERE idDept = ?", new String[]{String.valueOf(id)});
+
+        if(cursor.moveToFirst()){
+            do
+            {
+                int ids = cursor.getInt(cursor.getColumnIndex("id"));
+                int idDept = cursor.getInt(cursor.getColumnIndex("idDept"));
+                double lat = cursor.getDouble(cursor.getColumnIndex("lat"));
+                double lon = cursor.getDouble(cursor.getColumnIndex("long"));
+                String text = cursor.getString(cursor.getColumnIndex("log_text"));
+
+                logs.add(new LogStruct(ids, idDept, lat, lon, text));
+            }
+            while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        dbHelper.close();
+        JSONArray loges = new JSONArray();
+
+        try {
+            for (int i = 0; i < logs.size(); i++){
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("lat", logs.get(i).lat);
+                jsonObject.put("lon", logs.get(i).lon);
+                jsonObject.put("log_text", logs.get(i).text);
+                loges.put(jsonObject);
+            }
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+            return "";
+        }
+        if(!loges.toString().equals(""))
+            {
+                File sdPath = Environment.getExternalStorageDirectory();
+                sdPath = new File(sdPath.getAbsolutePath() + "/Android/data/com.gosproj.gosproject/"+String.valueOf(id));
+                sdPath.mkdirs();
+                File sdFile = new File(sdPath, "logs.ini");
+                try
+                {
+                    BufferedWriter bw = new BufferedWriter(new FileWriter(sdFile));
+                    bw.write(loges.toString());
+                    bw.close();
+                    Log.d("myLog", "Файл записан на SD: " + sdFile.getAbsolutePath());
+
+                    return sdFile.getAbsolutePath();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+
+                    return "";
+                }
+            }
+        else
+        {
+            return "";
+        }
+        }
 
     public String createAgentFile(int id)
     {
@@ -469,13 +570,16 @@ public class CreateAndLoadService extends Service
                 String fio = cursor.getString(cursor.getColumnIndex("fio"));
                 String rang = cursor.getString(cursor.getColumnIndex("rang"));
                 byte[] blob = cursor.getBlob(cursor.getColumnIndex("img"));
-                Boolean isProvider = (cursor.getInt(cursor.getColumnIndex("isProvider")) == 1)? true : false;
-                Boolean isCustomer = (cursor.getInt(cursor.getColumnIndex("isCustomer")) == 1)? true : false;
+                Boolean isProvider = (cursor.getInt(cursor.getColumnIndex("isPodryadchik")) == 1)? true : false;
+                Boolean isUorg = (cursor.getInt(cursor.getColumnIndex("isUpolnomochOrg")) == 1)? true : false;
+                Boolean isCustomer = (cursor.getInt(cursor.getColumnIndex("isZakazchik")) == 1)? true : false;
+                Boolean isSubProvider = (cursor.getInt(cursor.getColumnIndex("isSubPodryadchik")) == 1)? true : false;
+                Boolean isAvtNadzor = (cursor.getInt(cursor.getColumnIndex("isAvtNadzor")) == 1)? true : false;
                 Boolean isEngineeringService = (cursor.getInt(cursor.getColumnIndex("isEngineeringService")) == 1)? true : false;
 
                 //    Bitmap bitmap = BitmapFactory.decodeByteArray(blob, 0, blob.length);
 
-                agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider, isCustomer, isEngineeringService, blob));
+                agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider, isSubProvider, isCustomer, isEngineeringService, isAvtNadzor, isUorg, blob));
             }
             while (cursor.moveToNext());
         }
@@ -495,7 +599,6 @@ public class CreateAndLoadService extends Service
                 File sdPath = Environment.getExternalStorageDirectory();
                 sdPath = new File(sdPath.getAbsolutePath() + "/Android/data/com.gosproj.gosproject/"+String.valueOf(id)+"/signatures");
                 sdPath.mkdirs();
-
                 Bitmap bitmap = BitmapFactory.decodeByteArray(agents.get(i).blob, 0, agents.get(i).blob.length);
                 OutputStream stream = new FileOutputStream(sdPath.getAbsolutePath() + "/" + String.valueOf(i) + ".png");
 
@@ -512,8 +615,11 @@ public class CreateAndLoadService extends Service
                 jsonObject.put("fio", agents.get(i).fio);
                 jsonObject.put("rang", agents.get(i).rang);
                 jsonObject.put("signature", pathImg);
-                jsonObject.put("isProvider", String.valueOf(agents.get(i).isProvider));
-                jsonObject.put("isCustomer", String.valueOf(agents.get(i).isCustomer));
+                jsonObject.put("isProvider", String.valueOf(agents.get(i).isPodryadchik));
+                jsonObject.put("isCustomer", String.valueOf(agents.get(i).isZakazchik));
+                jsonObject.put("isSubProvider", String.valueOf(agents.get(i).isSubPodryadchik));
+                jsonObject.put("isAvtNadz", String.valueOf(agents.get(i).isAvtNadzor));
+                jsonObject.put("isUpolnomoch", String.valueOf(agents.get(i).isUpolnomochOrg));
                 jsonObject.put("isEngineeringService", String.valueOf(agents.get(i).isEngineeringService));
 
                 obj.put(jsonObject);
@@ -730,6 +836,14 @@ public class CreateAndLoadService extends Service
         @Override
         protected String doInBackground(Void... unused)
         {
+            DBHelper dbHelperL = new DBHelper(context, DBHelper.Logs);
+            SQLiteDatabase dbL = dbHelperL.getWritableDatabase();
+
+            dbL.delete(DBHelper.Logs, "idDept = " + id, null);
+
+            dbHelperL.close();
+            dbL.close();
+
             DBHelper dbHelper = new DBHelper(context, DBHelper.DEPARTURE);
             SQLiteDatabase db = dbHelper.getWritableDatabase();
 
@@ -791,7 +905,7 @@ public class CreateAndLoadService extends Service
                 try
                 {
                     File file = new File(pathZip);
-                    boolean result = new ServerApi().UpLoadFile(file);
+                    boolean result = new ServerApi(ServerApi.ACTION_LOAD_ACT).UpLoadFile(file);
 
                     if(!result)
                     {
