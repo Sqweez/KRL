@@ -8,7 +8,7 @@ import android.util.Log;
 public class DBHelper extends SQLiteOpenHelper
 {
     public static DBHelper mInstance = null;
-    public static final int DATABASE_VERSION = 43;
+    public static final int DATABASE_VERSION = 48;
     public static String DATABASE_NAME = "";
 
     Context context;
@@ -69,20 +69,21 @@ public class DBHelper extends SQLiteOpenHelper
             case "Departures":
                 db.execSQL("create table "+ DATABASE_NAME +" ("
                         + "id integer primary key autoincrement,"
-                        + "idAct integer,"
-                        + "idNomer integer,"
+                        + "idAct integer default 0,"
+                        + "idNomer integer default 0,"
                         + "date text,"
                         + "object text,"
-                        + "id_rabot integer,"
+                        + "isNew integer default 0,"
+                        + "id_rabot integer default 0,"
                         + "vid_rabot text,"
                         + "ispolnitel text,"
-                        + "gruppa_vyezda1 text,"
-                        + "gruppa_vyezda2 text,"
-                        + "gruppa_vyezda3 text,"
-                        + "podradchyk text,"
-                        + "subpodradchyk text,"
-                        + "avt_nadzor text,"
-                        + "inj_sluzhby text,"
+                        + "gruppa_vyezda1 text default '',"
+                        + "gruppa_vyezda2 text default '',"
+                        + "gruppa_vyezda3 text default '',"
+                        + "podradchyk text default '',"
+                        + "subpodradchyk text default '',"
+                        + "avt_nadzor text default '',"
+                        + "inj_sluzhby text default '',"
                         + "rgu_name text,"
                         + "uorg text,"
                         + "zakazchik text,"

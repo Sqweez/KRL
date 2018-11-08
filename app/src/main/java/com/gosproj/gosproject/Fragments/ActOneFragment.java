@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gosproj.gosproject.R;
 
@@ -97,7 +98,11 @@ public class ActOneFragment extends Fragment
             gv3_block.setVisibility(LinearLayout.INVISIBLE);
         }
         ispolnitel.setText(ispol_name);
-        actText.setText(resources.getString(R.string.act) + " № " + actNumber);
+        if(Integer.parseInt(actNumber) != 0)
+            actText.setText(resources.getString(R.string.act) + " № " + actNumber);
+        else
+            actText.setText("Новый акт выполненных работ");
+
         dateText.setText(date);
         uchastokText.setText(uchastok);
         typeText.setText(type);

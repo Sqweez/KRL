@@ -275,6 +275,7 @@ public class ProbaActivity extends AppCompatActivity
             case android.R.id.home:
                 Intent intent = new Intent();
                 intent.putParcelableArrayListExtra("probs", returnProbs);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 setResult(Activity.RESULT_OK, intent);
                 finish();
                 return true;

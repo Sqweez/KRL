@@ -104,35 +104,35 @@ public class ActTwoFragment extends Fragment implements RVOnClickInterface<Agent
                 if (isProvider)
                 {
                     Log.d("ADD_POS", id + " provider");
-                    mainAgentCategories.get(0).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, blob));
+                    mainAgentCategories.get(0).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, false, blob));
                 }
                 else if (isCustomer)
                 {
                     Log.d("ADD_POS", id + " customer");
-                    mainAgentCategories.get(1).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, blob));
+                    mainAgentCategories.get(1).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, false, blob));
                 }
                 else if (isEngineeringService)
                 {
                     Log.d("ADD_POS", id + " engeneiresService");
-                    mainAgentCategories.get(2).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, blob));
+                    mainAgentCategories.get(2).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, false, blob));
                 }
                 else if (isUorg)
                 {
                     Log.d("ADD_POS", id + " engeneiresService");
-                    mainAgentCategories.get(4).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, blob));
+                    mainAgentCategories.get(4).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg,false, blob));
                 }
                 else if (isAvtNadzor)
                 {
                     Log.d("ADD_POS", id + " engeneiresService");
-                    mainAgentCategories.get(5).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, blob));
+                    mainAgentCategories.get(5).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, false, blob));
                 }
                 else if (isSubProvider)
                 {
                     Log.d("ADD_POS", id + " engeneiresService");
-                    mainAgentCategories.get(3).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, blob));
+                    mainAgentCategories.get(3).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, false, blob));
                 }
                 else if(isRGU){
-                    mainAgentCategories.get(6).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider, isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, blob));
+                    mainAgentCategories.get(6).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider, isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, isRGU, blob));
                 }
             }
 
@@ -199,35 +199,35 @@ public class ActTwoFragment extends Fragment implements RVOnClickInterface<Agent
                     if (isProvider)
                     {
                         Log.d("ADD_POS", id + " provider");
-                        mainAgentCategories.get(0).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, blob));
+                        mainAgentCategories.get(0).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, isRGU, blob));
                     }
                     else if (isCustomer)
                     {
                         Log.d("ADD_POS", id + " customer");
-                        mainAgentCategories.get(1).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, blob));
+                        mainAgentCategories.get(1).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, isRGU, blob));
                     }
                     else if (isEngineeringService)
                     {
                         Log.d("ADD_POS", id + " engeneiresService");
-                        mainAgentCategories.get(2).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, blob));
+                        mainAgentCategories.get(2).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, isRGU, blob));
                     }
                     else if (isUorg)
                     {
                         Log.d("ADD_POS", id + " engeneiresService");
-                        mainAgentCategories.get(4).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, blob));
+                        mainAgentCategories.get(4).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, isRGU, blob));
                     }
                     else if (isAvtNadzor)
                     {
                         Log.d("ADD_POS", id + " engeneiresService");
-                        mainAgentCategories.get(5).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, blob));
+                        mainAgentCategories.get(5).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, isRGU, blob));
                     }
                     else if (isSubProvider)
                     {
                         Log.d("ADD_POS", id + " engeneiresService");
-                        mainAgentCategories.get(3).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, blob));
+                        mainAgentCategories.get(3).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, isRGU, blob));
                     }
                     else if(isRGU){
-                        mainAgentCategories.get(6).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, blob));
+                        mainAgentCategories.get(6).agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider,isSubProvider, isCustomer, isEngineeringService,isAvtNadzor,isUorg, isRGU, blob));
                     }
                 }
 

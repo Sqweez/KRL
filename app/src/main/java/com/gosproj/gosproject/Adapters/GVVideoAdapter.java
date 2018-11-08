@@ -86,7 +86,7 @@ public class GVVideoAdapter extends BaseAdapter
     @Override
     public View getView(final int position, View convertView, ViewGroup parent)
     {
-        ViewHolder holder;
+        final ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
             convertView = mInflater.inflate(
@@ -128,10 +128,22 @@ public class GVVideoAdapter extends BaseAdapter
             holder.image.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                   // File file = new File(videoses.get(position).path);
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(videoses.get(position).path));
-                    intent.setDataAndType(Uri.parse(videoses.get(position).path), "video/mp4");
-                    activity.startActivity(intent);
+                    if(!selected){
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(videoses.get(position).path));
+                        intent.setDataAndType(Uri.parse(videoses.get(position).path), "video/mp4");
+                        activity.startActivity(intent);
+                    }
+                  else{
+                        boolean isChecked = holder.checkBox.isChecked();
+                        if(isChecked){
+                            holder.checkBox.setChecked(false);
+                            thumbnailsselection[holder.id] = false;
+                        }
+                        else{
+                            holder.checkBox.setChecked(true);
+                            thumbnailsselection[holder.id] = true;
+                        }
+                    }
                 }
             });
         }

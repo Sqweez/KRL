@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.gosproj.gosproject.Functionals.NavigationDrawer;
+import com.gosproj.gosproject.Structures.Act;
 
 public class QRAuth extends AppCompatActivity {
 
@@ -62,6 +63,7 @@ public class QRAuth extends AppCompatActivity {
         }
         return true;
     }
+
     public boolean checkAuthQR(String[] strings){
         if(strings.length == 4 && isNumeric(strings[1]) && isNumeric(strings[2])){
             return true;
@@ -70,6 +72,7 @@ public class QRAuth extends AppCompatActivity {
             return false;
         }
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);

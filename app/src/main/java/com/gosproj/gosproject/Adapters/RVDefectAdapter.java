@@ -89,6 +89,17 @@ public class RVDefectAdapter extends RecyclerView.Adapter<RVDefectAdapter.ViewHo
                 {
                     rvOnClickInterface.onClick(def.get(position));
                 }
+                else{
+                    boolean isChecked = holder.checkBox.isChecked();
+                    if(isChecked){
+                        holder.checkBox.setChecked(false);
+                        removes.remove(def.get(position));
+                    }
+                    else{
+                        holder.checkBox.setChecked(true);
+                        removes.add(def.get(position));
+                    }
+                }
             }
         });
     }
@@ -126,7 +137,6 @@ public class RVDefectAdapter extends RecyclerView.Adapter<RVDefectAdapter.ViewHo
             notifyItemChanged(l);
         }
 
-       // unSelectedElements();
 
         select = false;
 

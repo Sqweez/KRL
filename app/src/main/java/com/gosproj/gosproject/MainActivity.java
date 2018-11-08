@@ -16,8 +16,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Debug;
+import android.os.Handler;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -33,9 +39,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import android.location.LocationListener;
+
+import com.google.android.gms.plus.model.people.Person;
 import com.gosproj.gosproject.Adapters.RVMainAdapter;
 import com.gosproj.gosproject.Functionals.DBHelper;
 import com.gosproj.gosproject.Functionals.NavigationDrawer;
+import com.gosproj.gosproject.Functionals.VersionChecker;
 import com.gosproj.gosproject.Services.SyncService;
 import com.gosproj.gosproject.Structures.MainCategory;
 import com.gosproj.gosproject.Structures.SecondaryCategory;
@@ -45,13 +54,18 @@ import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
+import junit.runner.Version;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class MainActivity extends AppCompatActivity {
+    Runnable runnable;
+    AlertDialog alert;
     Activity activity;
     Context context;
     Resources resources;
@@ -61,14 +75,15 @@ public class MainActivity extends AppCompatActivity {
     RVMainAdapter rvMainAdapter;
     SharedPreferences pref = null;
     ArrayList<MainCategory> mainCategories = new ArrayList<MainCategory>();
+    String oldVersion;
 
-    public void checkPermission(){
+    public void checkPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                ){//Can add more as per requirement
-
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE ) != PackageManager.PERMISSION_GRANTED
+                ) {
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_NETWORK_STATE},
                     123);
         }
     }
@@ -81,6 +96,10 @@ public class MainActivity extends AppCompatActivity {
         activity = this;
         context = this;
         resources = getResources();
+        try{
+            oldVersion = context.getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+
+        }catch (PackageManager.NameNotFoundException e){}
         Dexter.withActivity(activity)
                 .withPermissions(
                         Manifest.permission.CAMERA,
@@ -133,7 +152,49 @@ public class MainActivity extends AppCompatActivity {
         LinearLayoutManager llm = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(llm);
         recyclerView.setAdapter(rvMainAdapter);
-    }
+        /*if(isOnline()){
+            final Handler handler = new Handler();
+            handler.post(runnable = new Runnable() {
+                @Override
+                public void run() {
+                    VersionChecker versionChecker = new VersionChecker();
+                    try{
+                        String data = versionChecker.execute().get();
+                        if(!data.equals(oldVersion)){
+                            AlertDialog.Builder builder;
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                builder = new AlertDialog.Builder(context, android.R.style.Theme_Material_Light_Dialog_Alert);
+                            } else {
+                                builder = new AlertDialog.Builder(context);
+                            }
+                            builder.setTitle("Внимание!");
+                            builder.setMessage("Доступна новая версия приложения KazRoadLab");
+                            builder.setCancelable(false);
+                            builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                }
+                            });
+                            builder.setPositiveButton("Обновить приложение", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    final String appPackageName = activity.getPackageName();
+                                    try{
+                                        activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                                    }catch (android.content.ActivityNotFoundException e){
+                                        activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                                    }
+                                }
+                            });
+                            builder.create().show();
+                        }
+                    }catch (InterruptedException e){}
+                    catch (ExecutionException e){}
+                }
+            });
+
+        }*/
+   }
 
     @Override
     protected void onStart() {
@@ -156,6 +217,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -231,5 +293,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         Log.d("EVENTSSS", "MainActivity: onDestroy()");
+    }
+    public boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }

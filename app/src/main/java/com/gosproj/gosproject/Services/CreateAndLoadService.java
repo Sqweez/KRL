@@ -1,5 +1,6 @@
 package com.gosproj.gosproject.Services;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -7,10 +8,13 @@ import android.app.Service;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -19,9 +23,11 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import com.gosproj.gosproject.Functionals.DBHelper;
+import com.gosproj.gosproject.Functionals.NavigationDrawer;
 import com.gosproj.gosproject.Functionals.ServerApi;
 import com.gosproj.gosproject.MainActivity;
 import com.gosproj.gosproject.R;
@@ -46,7 +52,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedWriter;
-import java.io.Console;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -59,6 +64,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
+
 public class CreateAndLoadService extends Service
 {
     final String LOG_TAG = "ServiceLoad";
@@ -66,10 +74,15 @@ public class CreateAndLoadService extends Service
     private static final Random random = new Random();
     private static final String CHARS = "ABCDEFGHJKLMNOPQRSTUVWXYZ";
 
+    Resources resources;
+    Activity activity;
     Context context;
+
+    SharedPreferences sharedPref;
+
     int actID;
     int id;
-
+    int isNew;
     NotificationManager nm;
 
     public CreateAndLoadService()
@@ -81,8 +94,9 @@ public class CreateAndLoadService extends Service
     {
         super.onCreate();
         Log.d(LOG_TAG, "onCreate");
-
+        resources = getResources();
         context = getApplicationContext();
+        sharedPref = context.getSharedPreferences(resources.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     }
 
@@ -90,7 +104,7 @@ public class CreateAndLoadService extends Service
     {
         Log.d(LOG_TAG, "onStartCommand");
         id = intent.getIntExtra("id", 0);
-
+        isNew = intent.getIntExtra("isNew", 0);
         someTask();
         return super.onStartCommand(intent, flags, startId);
     }
@@ -133,7 +147,6 @@ public class CreateAndLoadService extends Service
         File rootFolder = Environment.getExternalStorageDirectory();
         rootFolder = new File(rootFolder.getAbsolutePath() + "/Android/data/com.gosproj.gosproject/"+String.valueOf(id) + "");
         rootFolder.mkdirs();
-
         String token = getToken(3);
         rootFolder.renameTo(new File(rootFolder.getAbsolutePath() + "/Android/data/com.gosproj.gosproject/"+token));
         try
@@ -156,7 +169,8 @@ public class CreateAndLoadService extends Service
             parameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_256);
 
             parameters.setPassword("123");
-            zipFile.addFolder(rootFolder, parameters);
+            parameters.setIncludeRootFolder(false);
+            zipFile.createZipFileFromFolder(rootFolder, parameters, false, 0);
             deleteRecursive(rootFolder);
 
             return pathZip;
@@ -164,7 +178,6 @@ public class CreateAndLoadService extends Service
         catch (ZipException e)
         {
             e.printStackTrace();
-            Log.d("MYLOGAWESOME", "OSHIBKA " + e);
             return "";
         }
     }
@@ -292,15 +305,43 @@ public class CreateAndLoadService extends Service
 
         JSONObject obj = new JSONObject();
 
-
-        try
-        {
-            obj.put("idAct", act.idAct);
-            obj.put("date", act.date);
+        if(isNew == 0){
+            try
+            {
+                obj.put("idAct", act.idAct);
+                obj.put("date", act.date);
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
         }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
+        else{
+            SharedPreferences sf = context.getSharedPreferences("com.gosproj.gosproject", Context.MODE_PRIVATE);
+            int user_id = sf.getInt("user_id", 0);
+            int rgu_id = sf.getInt("rgu_id", 0);
+            String rguID = String.valueOf(rgu_id);
+            if(rgu_id < 10){
+                rguID = "0" + rgu_id;
+            }
+            try
+            {
+                obj.put("user_id", user_id);
+                obj.put("rgu_id", rguID);
+                obj.put("date", act.date);
+                obj.put("object", act.object);
+                obj.put("id_rabot", act.id_rabot);
+                if(!act.gruppa_vyezda1.equals(""))
+                obj.put("gv_1", act.gruppa_vyezda1);
+                if(!act.gruppa_vyezda2.equals(""))
+                obj.put("gv_2", act.gruppa_vyezda2);
+                if(!act.gruppa_vyezda3.equals(""))
+                obj.put("gv_3", act.gruppa_vyezda3);
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
         }
 
         if (!obj.toString().equals(""))
@@ -576,10 +617,7 @@ public class CreateAndLoadService extends Service
                 Boolean isSubProvider = (cursor.getInt(cursor.getColumnIndex("isSubPodryadchik")) == 1)? true : false;
                 Boolean isAvtNadzor = (cursor.getInt(cursor.getColumnIndex("isAvtNadzor")) == 1)? true : false;
                 Boolean isEngineeringService = (cursor.getInt(cursor.getColumnIndex("isEngineeringService")) == 1)? true : false;
-
-                //    Bitmap bitmap = BitmapFactory.decodeByteArray(blob, 0, blob.length);
-
-                agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider, isSubProvider, isCustomer, isEngineeringService, isAvtNadzor, isUorg, blob));
+                agents.add(new Agent(id, idDept, nameCompany, rang, fio, isProvider, isSubProvider, isCustomer, isEngineeringService, isAvtNadzor, isUorg, false, blob));
             }
             while (cursor.moveToNext());
         }
@@ -599,16 +637,18 @@ public class CreateAndLoadService extends Service
                 File sdPath = Environment.getExternalStorageDirectory();
                 sdPath = new File(sdPath.getAbsolutePath() + "/Android/data/com.gosproj.gosproject/"+String.valueOf(id)+"/signatures");
                 sdPath.mkdirs();
-                Bitmap bitmap = BitmapFactory.decodeByteArray(agents.get(i).blob, 0, agents.get(i).blob.length);
-                OutputStream stream = new FileOutputStream(sdPath.getAbsolutePath() + "/" + String.valueOf(i) + ".png");
+                if(agents.get(i).blob != null){
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(agents.get(i).blob, 0, agents.get(i).blob.length);
+                    OutputStream stream = new FileOutputStream(sdPath.getAbsolutePath() + "/" + String.valueOf(i) + ".png");
 
-                if (bitmap != null)
-                {
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                    pathImg = "/signatures/" + String.valueOf(i) + ".png";
+                    if (bitmap != null)
+                    {
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                        pathImg = "/signatures/" + String.valueOf(i) + ".png";
+                    }
+
+                    stream.close();
                 }
-
-                stream.close();
 
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("nameCompany", agents.get(i).nameCompany);
@@ -812,6 +852,11 @@ public class CreateAndLoadService extends Service
             {
                 SendZip sendZip = new SendZip(unused);
                 sendZip.execute();
+                if(isOnline()){
+                    Sync sync = new Sync();
+                    sync.execute();
+                }
+
             }
         }
     }
@@ -900,6 +945,7 @@ public class CreateAndLoadService extends Service
             dbHelpeV.close();
             dbV.close();
 
+
             if (isOnline())
             {
                 try
@@ -948,7 +994,6 @@ public class CreateAndLoadService extends Service
 
     private void addPath(String path)
     {
-        Log.d("Offline", "ОФФЛАЙН");
         DBHelper dbHelperOFF = new DBHelper(context, DBHelper.OfflineZip);
         SQLiteDatabase dbOFF = dbHelperOFF.getWritableDatabase();
 
@@ -989,5 +1034,68 @@ public class CreateAndLoadService extends Service
         Notification notification = mBuilder.build();
         notification.flags |= Notification.FLAG_NO_CLEAR;
         nm.notify(200, notification);
+    }
+
+    class Sync extends AsyncTask<Void, Void, String> {
+        int res = 0;
+
+        SharedPreferences sharedPref;
+        SharedPreferences.Editor editor;
+
+        public Sync() {
+            sharedPref = context.getSharedPreferences(resources.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+            editor = sharedPref.edit();
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+
+        @Override
+        protected String doInBackground(Void... unused) {
+            DBHelper dbHelper = new DBHelper(context, DBHelper.OfflineZip);
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            Cursor cursor = db.rawQuery("SELECT * FROM OfflineZip", null);
+            if (cursor.moveToFirst()) {
+                do {
+                    if (isOnline()) {
+                        int id = cursor.getInt(cursor.getColumnIndex("id"));
+                        String path = cursor.getString(cursor.getColumnIndex("path"));
+
+                        try {
+                            File file = new File(path);
+                            boolean result = new ServerApi(ServerApi.ACTION_LOAD_ACT).UpLoadFile(file);
+
+                            if (result) {
+                                file.delete();
+                                db.delete(DBHelper.OfflineZip, "id = " + id, null);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                       /* DateFormat df = new SimpleDateFormat("Время: HH:mm:ss dd.MM.yyyy");
+                        String date = df.format(Calendar.getInstance().getTime());
+                        editor.putString("timeSync", date);
+                        editor.commit();*/
+                    }
+                }
+                while (cursor.moveToNext());
+            }
+            else{
+                res = 1;
+            }
+
+            cursor.close();
+            db.close();
+            dbHelper.close();
+
+            return "";
+        }
+        @Override
+        protected void onPostExecute(String unused) {
+        }
+
     }
 }

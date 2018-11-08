@@ -69,6 +69,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.POWER_SERVICE;
 
 public class ActSevenFragment extends Fragment {
     final int REQUEST_ADD_PHOTO = 240;
@@ -184,7 +185,7 @@ public class ActSevenFragment extends Fragment {
         Log.d("POSITION", "NULL");
 
         long rowID = db.insert(dbHelper.getDatabaseName(), null, cv);
-        logsHelper.createLog("", "", LogsHelper.ACTION_ADD);
+        logsHelper.createLog(fullPath.getName(), "", LogsHelper.ACTION_ADD);
         if (rowID != 0) {
             //photos.add(new Photo((int) rowID, id, fullPath.getPath().toString()));
             gvPhotoAdapter.addPhoto(new Photo((int) rowID, id, fullPath.getPath().toString()));
@@ -240,7 +241,8 @@ public class ActSevenFragment extends Fragment {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         for (int i = 0; i < removes.size(); i++) {
-            logsHelper.createLog("", "", LogsHelper.ACTION_DELETE);
+            String[] fileName = removes.get(i).path.split("\\/");
+            logsHelper.createLog(fileName[9], "", LogsHelper.ACTION_DELETE);
             int delCount = db.delete(DBHelper.Photos, "id = ?",
                     new String[]{String.valueOf(removes.get(i).id)});
         }

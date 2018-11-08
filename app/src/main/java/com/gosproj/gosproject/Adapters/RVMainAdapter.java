@@ -64,7 +64,6 @@ public class RVMainAdapter extends RecyclerView.Adapter<RVMainAdapter.ViewHolder
 
         for (int i=0; i<mainCategories.get(position).secondaryCategories.size(); i++)
         {
-            //Log.d("myLOGCREA",i + " " + mainCategories.get(position).secondaryCategories.get(i).name);
             holder.secondaryList.addView(createSecondaryItem(mainCategories.get(position).secondaryCategories.get(i)));
         }
 
@@ -92,10 +91,6 @@ public class RVMainAdapter extends RecyclerView.Adapter<RVMainAdapter.ViewHolder
                     Animation animation = new AnimationUtils().loadAnimation(context, R.anim.open_rotate_drop);
                     holder.dropCard.startAnimation(animation);
 
-                    /*
-                    final int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                    final int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                    holder.secondaryList.measure(widthSpec, heightSpec);*/
                     ValueAnimator animator = ValueAnimator.ofInt(0, finalHeight[0]);
 
                     animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {

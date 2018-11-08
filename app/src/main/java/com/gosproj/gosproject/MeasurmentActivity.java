@@ -40,7 +40,7 @@ public class MeasurmentActivity extends AppCompatActivity {
     String old_measur_name;
     Button save;
     Button saveAndAddNew;
-
+    int action;
     int id;
     Measurment measurment;
     LogsHelper logHelper;
@@ -115,7 +115,11 @@ public class MeasurmentActivity extends AppCompatActivity {
         if (clickSave())
         {
             Intent intent = new Intent();
+            intent.putExtra("old", old_measur_name);
+            intent.putExtra("new", name.getEditText().getText().toString());
+            intent.putExtra("action", action);
             intent.putParcelableArrayListExtra("measurments", returnMeasurment);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             setResult(Activity.RESULT_OK, intent);
             finish();
         }
@@ -126,9 +130,6 @@ public class MeasurmentActivity extends AppCompatActivity {
         if (clickSave())
         {
             name.getEditText().setText("");
-            /*killo.getEditText().setText("");
-            comment.getEditText().setText("");*/
-
             measurment = null;
         }
     }
@@ -168,13 +169,6 @@ public class MeasurmentActivity extends AppCompatActivity {
         }
     }
 
-    public String getDateTime(){
-        Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
-        SimpleDateFormat stf = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-        String dateTime = sdf.format(date) + " " + stf.format(date);
-        return dateTime;
-    }
     private boolean edit()
     {
         boolean result = false;
@@ -203,14 +197,10 @@ public class MeasurmentActivity extends AppCompatActivity {
 
         db.close();
         dbHelper.close();
+        action = LogsHelper.ACTION_EDIT;
+/*
         logHelper.createLog(old_measur_name, name.getEditText().getText().toString(), logHelper.ACTION_EDIT);
-       /* DBHelper dbHelper1 = new DBHelper(getApplicationContext(), DBHelper.Logs);
-        SQLiteDatabase db1 = dbHelper1.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        cv.put("log_text", getDateTime() + ": Замер изменен со значения '" + old_measur_name + "' на значение '" + name.getEditText().getText().toString() + "'");
-        db1.insert(dbHelper1.getDatabaseName(), null, cv);
-        dbHelper1.close();
-        db1.close();*/
+*/
         return result;
     }
 
@@ -227,8 +217,11 @@ public class MeasurmentActivity extends AppCompatActivity {
         cv.put("name", name.getEditText().getText().toString());
 
         long rowID = db.insert(dbHelper.getDatabaseName(), null, cv);
+        old_measur_name = name.getEditText().getText().toString();
+/*
         logHelper.createLog(name.getEditText().getText().toString(), "", logHelper.ACTION_ADD);
-
+*/
+        action = LogsHelper.ACTION_ADD;
         if (rowID != 0)
         {
             returnMeasurment.add(new Measurment((int) rowID, id, name.getEditText().getText().toString()));
@@ -256,6 +249,7 @@ public class MeasurmentActivity extends AppCompatActivity {
             case android.R.id.home:
                 Intent intent = new Intent();
                 intent.putParcelableArrayListExtra("measurments", returnMeasurment);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 setResult(Activity.RESULT_OK, intent);
                 finish();
                 return true;
@@ -269,6 +263,7 @@ public class MeasurmentActivity extends AppCompatActivity {
     {
         Intent intent = new Intent();
         intent.putParcelableArrayListExtra("measurments", returnMeasurment);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         setResult(Activity.RESULT_OK, intent);
         finish();
     }

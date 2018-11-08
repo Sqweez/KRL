@@ -23,8 +23,7 @@ import com.gosproj.gosproject.Structures.MainAgentCategory;
 
 import java.util.ArrayList;
 
-public class RVAgentAdapter extends RecyclerView.Adapter<RVAgentAdapter.ViewHolder>
-{
+public class RVAgentAdapter extends RecyclerView.Adapter<RVAgentAdapter.ViewHolder> {
     Activity activity;
     Resources resources;
     Context context;
@@ -33,13 +32,12 @@ public class RVAgentAdapter extends RecyclerView.Adapter<RVAgentAdapter.ViewHold
 
     boolean select = false;
 
-    ArrayList<Agent> removes= new ArrayList<Agent>();
+    ArrayList<Agent> removes = new ArrayList<Agent>();
 
     RVOnClickInterface rvOnClickInterface;
     boolean isOpen[];
 
-    public RVAgentAdapter(Activity activity, ArrayList<MainAgentCategory> agents, RVOnClickInterface rvOnClickInterface)
-    {
+    public RVAgentAdapter(Activity activity, ArrayList<MainAgentCategory> agents, RVOnClickInterface rvOnClickInterface) {
         this.activity = activity;
         this.resources = activity.getResources();
         this.context = activity.getApplicationContext();
@@ -49,15 +47,13 @@ public class RVAgentAdapter extends RecyclerView.Adapter<RVAgentAdapter.ViewHold
 
         isOpen = new boolean[agents.size()];
 
-        for (int i=0; i<isOpen.length; i++)
-        {
+        for (int i = 0; i < isOpen.length; i++) {
             isOpen[i] = false;
         }
     }
 
     @Override
-    public RVAgentAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
-    {
+    public RVAgentAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.agents_item, parent, false);
 
         RVAgentAdapter.ViewHolder vh = new RVAgentAdapter.ViewHolder(v);
@@ -65,29 +61,23 @@ public class RVAgentAdapter extends RecyclerView.Adapter<RVAgentAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(final RVAgentAdapter.ViewHolder holder, final int position)
-    {
-        if (isOpen[position])
-        {
+    public void onBindViewHolder(final RVAgentAdapter.ViewHolder holder, final int position) {
+        if (isOpen[position]) {
             holder.secondaryList.setVisibility(View.VISIBLE);
-        }
-        else
-        {
+        } else {
             holder.secondaryList.setVisibility(View.GONE);
         }
 
-        if (agents.get(position).agents.size() > 0)
-        {
+        if (agents.get(position).agents.size() > 0) {
             holder.cardView.setVisibility(View.VISIBLE);
             holder.nameCategory.setText(agents.get(position).name);
             holder.secondaryList.removeAllViews();
 
-            for (int i=0; i<agents.get(position).agents.size(); i++)
-            {
+            for (int i = 0; i < agents.get(position).agents.size(); i++) {
                 final int finalI = i;
 
                 View secondary = LayoutInflater.from(context).inflate(R.layout.secondary_main_item, null, true);
-                CheckBox checkBox = (CheckBox) secondary.findViewById(R.id.checkbox);
+                final CheckBox checkBox = (CheckBox) secondary.findViewById(R.id.checkbox);
                 TextView textView = (TextView) secondary.findViewById(R.id.primaryText);
 
                 textView.setText(agents.get(position).agents.get(i).nameCompany + "\n" + agents.get(position).agents.get(i).rang + "\n" + agents.get(position).agents.get(i).fio);
@@ -95,8 +85,7 @@ public class RVAgentAdapter extends RecyclerView.Adapter<RVAgentAdapter.ViewHold
                 checkBox.setChecked(false);
                 checkBox.setVisibility(View.GONE);
 
-                if (!select)
-                {
+                if (!select) {
                     checkBox.setVisibility(View.GONE);
                     secondary.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -104,22 +93,34 @@ public class RVAgentAdapter extends RecyclerView.Adapter<RVAgentAdapter.ViewHold
                             rvOnClickInterface.onClick(agents.get(position).agents.get(finalI));
                         }
                     });
-                }
-                else
-                {
+                } else {
                     checkBox.setVisibility(View.VISIBLE);
+                    secondary.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            boolean isChecked = checkBox.isChecked();
+                            if (agents.get(position).agents.get(finalI).blob == null) {
+                                if (isChecked) {
+                                    checkBox.setChecked(false);
+                                    removes.remove(agents.get(position).agents.get(finalI));
+                                } else {
+                                    checkBox.setChecked(true);
+                                    removes.add(agents.get(position).agents.get(finalI));
+                                }
+                            }
+
+                        }
+                    });
+
                 }
 
                 checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if (isChecked)
-                        {
-                            if(agents.get(position).agents.get(finalI).blob == null)
-                            removes.add(agents.get(position).agents.get(finalI));
-                        }
-                        else
-                        {
+                        if (isChecked) {
+                            if (agents.get(position).agents.get(finalI).blob == null)
+                                removes.add(agents.get(position).agents.get(finalI));
+                        } else {
                             removes.remove(agents.get(position).agents.get(finalI));
                         }
                     }
@@ -128,177 +129,83 @@ public class RVAgentAdapter extends RecyclerView.Adapter<RVAgentAdapter.ViewHold
                 holder.secondaryList.addView(secondary);
             }
 
-            holder.mainContent.setOnClickListener(new View.OnClickListener()
-            {
+            holder.mainContent.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v)
-                {
-                    if (holder.secondaryList.getVisibility() != View.VISIBLE)
-                    {
+                public void onClick(View v) {
+                    if (holder.secondaryList.getVisibility() != View.VISIBLE) {
                         holder.secondaryList.setVisibility(View.VISIBLE);
                         isOpen[position] = true;
 
                         Animation animation = new AnimationUtils().loadAnimation(context, R.anim.open_rotate_drop);
                         holder.dropCard.startAnimation(animation);
-
-                        /*
-                        Animation animation = new AnimationUtils().loadAnimation(context, R.anim.open_rotate_drop);
-                        holder.dropCard.startAnimation(animation);
-
-                        final int widthSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                        final int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-                        holder.secondaryList.measure(widthSpec, heightSpec);
-
-                        ValueAnimator animator = ValueAnimator.ofInt(0, holder.secondaryList.getMeasuredHeight());
-
-                        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                            @Override
-                            public void onAnimationUpdate(ValueAnimator animation) {
-                                int value = (Integer) animation.getAnimatedValue();
-                                ViewGroup.LayoutParams layoutParams = holder.secondaryList.getLayoutParams();
-                                layoutParams.height = value;
-                                holder.secondaryList.setLayoutParams(layoutParams);
-                            }
-                        });
-
-                        animator.start();*/
-                    }
-                    else
-                    {
+                    } else {
                         Animation animation = new AnimationUtils().loadAnimation(context, R.anim.close_rotate_drop);
                         holder.dropCard.startAnimation(animation);
 
                         isOpen[position] = false;
 
                         holder.secondaryList.setVisibility(View.GONE);
-
-                        /*
-                        int finalHeight = holder.secondaryList.getHeight();
-                        ValueAnimator animator = ValueAnimator.ofInt(finalHeight, 0);
-
-                        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                            @Override
-                            public void onAnimationUpdate(ValueAnimator animation) {
-                                int value = (Integer) animation.getAnimatedValue();
-                                ViewGroup.LayoutParams layoutParams = holder.secondaryList.getLayoutParams();
-                                layoutParams.height = value;
-                                holder.secondaryList.setLayoutParams(layoutParams);
-                            }
-                        });
-
-                        animator.addListener(new Animator.AnimatorListener() {
-                            @Override
-                            public void onAnimationStart(Animator animation) {
-
-                            }
-
-                            @Override
-                            public void onAnimationEnd(Animator animation) {
-                                holder.secondaryList.setVisibility(View.GONE);
-                            }
-
-                            @Override
-                            public void onAnimationCancel(Animator animation) {
-
-                            }
-
-                            @Override
-                            public void onAnimationRepeat(Animator animation) {
-
-                            }
-                        });
-                        animator.start();*/
                     }
                 }
             });
-        }
-        else
-        {
+        } else {
             holder.cardView.setVisibility(View.GONE);
         }
     }
 
-    public void selectedElements()
-    {
+    public void selectedElements() {
         select = true;
         notifyDataSetChanged();
     }
 
-    public void unSelectedElements()
-    {
+    public void unSelectedElements() {
         select = false;
         notifyDataSetChanged();
     }
 
-    public ArrayList<Agent> removeElements()
-    {
+    public ArrayList<Agent> removeElements() {
         select = false;
-        for (int i = 0; i<removes.size(); i++)
-        {
-            if (removes.get(i).isPodryadchik)
-            {
-                for (int l = 0; l<agents.get(0).agents.size(); l++)
-                {
-                    if (removes.get(i).id == agents.get(0).agents.get(l).id)
-                    {
+        for (int i = 0; i < removes.size(); i++) {
+            if (removes.get(i).isPodryadchik) {
+                for (int l = 0; l < agents.get(0).agents.size(); l++) {
+                    if (removes.get(i).id == agents.get(0).agents.get(l).id) {
                         agents.get(0).agents.remove(l);
                     }
                 }
-            }
-            else if (removes.get(i).isZakazchik)
-            {
-                for (int l = 0; l<agents.get(1).agents.size(); l++)
-                {
-                    if (removes.get(i).id == agents.get(1).agents.get(l).id)
-                    {
+            } else if (removes.get(i).isZakazchik) {
+                for (int l = 0; l < agents.get(1).agents.size(); l++) {
+                    if (removes.get(i).id == agents.get(1).agents.get(l).id) {
                         agents.get(1).agents.remove(l);
                     }
                 }
-            }
-            else if (removes.get(i).isEngineeringService)
-            {
-                for (int l = 0; l<agents.get(2).agents.size(); l++)
-                {
-                    if (removes.get(i).id == agents.get(2).agents.get(l).id)
-                    {
+            } else if (removes.get(i).isEngineeringService) {
+                for (int l = 0; l < agents.get(2).agents.size(); l++) {
+                    if (removes.get(i).id == agents.get(2).agents.get(l).id) {
                         agents.get(2).agents.remove(l);
                     }
                 }
-            }
-            else if (removes.get(i).isUpolnomochOrg)
-            {
-                for (int l = 0; l<agents.get(4).agents.size(); l++)
-                {
-                    if (removes.get(i).id == agents.get(4).agents.get(l).id)
-                    {
+            } else if (removes.get(i).isUpolnomochOrg) {
+                for (int l = 0; l < agents.get(4).agents.size(); l++) {
+                    if (removes.get(i).id == agents.get(4).agents.get(l).id) {
                         agents.get(4).agents.remove(l);
                     }
                 }
-            }
-            else if (removes.get(i).isAvtNadzor)
-            {
-                for (int l = 0; l<agents.get(5).agents.size(); l++)
-                {
-                    if (removes.get(i).id == agents.get(5).agents.get(l).id)
-                    {
+            } else if (removes.get(i).isAvtNadzor) {
+                for (int l = 0; l < agents.get(5).agents.size(); l++) {
+                    if (removes.get(i).id == agents.get(5).agents.get(l).id) {
                         agents.get(5).agents.remove(l);
                     }
                 }
-            }
-            else if (removes.get(i).isSubPodryadchik)
-            {
-                for (int l = 0; l<agents.get(3).agents.size(); l++)
-                {
-                    if (removes.get(i).id == agents.get(3).agents.get(l).id)
-                    {
+            } else if (removes.get(i).isSubPodryadchik) {
+                for (int l = 0; l < agents.get(3).agents.size(); l++) {
+                    if (removes.get(i).id == agents.get(3).agents.get(l).id) {
                         agents.get(3).agents.remove(l);
                     }
                 }
             }
         }
 
-        for (int i=0; i<agents.size(); i++)
-        {
+        for (int i = 0; i < agents.size(); i++) {
             notifyItemChanged(i);
         }
 
@@ -306,13 +213,11 @@ public class RVAgentAdapter extends RecyclerView.Adapter<RVAgentAdapter.ViewHold
     }
 
     @Override
-    public int getItemCount()
-    {
+    public int getItemCount() {
         return agents.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder
-    {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
         LinearLayout mainContent;
         TextView nameCategory;
@@ -321,8 +226,7 @@ public class RVAgentAdapter extends RecyclerView.Adapter<RVAgentAdapter.ViewHold
 
         View view;
 
-        public ViewHolder(View v)
-        {
+        public ViewHolder(View v) {
             super(v);
 
             cardView = (CardView) v.findViewById(R.id.cardView);

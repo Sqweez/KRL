@@ -85,7 +85,7 @@ public class GVScanAdapter extends BaseAdapter
     @Override
     public View getView(final int position, View convertView, ViewGroup parent)
     {
-        ViewHolder holder;
+        final ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
             convertView = mInflater.inflate(
@@ -137,11 +137,24 @@ public class GVScanAdapter extends BaseAdapter
         holder.image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                File videoFile2Play2 = new File(scans.get(position).path);
-                Intent i = new Intent(Intent.ACTION_VIEW, FileProvider.getUriForFile(context, "com.gosproj.gosproject", videoFile2Play2));
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                i.setDataAndType(FileProvider.getUriForFile(context, "com.gosproj.gosproject", videoFile2Play2), "image/jpg");
-                activity.startActivity(i);
+                if(!selected){
+                    File videoFile2Play2 = new File(scans.get(position).path);
+                    Intent i = new Intent(Intent.ACTION_VIEW, FileProvider.getUriForFile(context, "com.gosproj.gosproject", videoFile2Play2));
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    i.setDataAndType(FileProvider.getUriForFile(context, "com.gosproj.gosproject", videoFile2Play2), "image/jpg");
+                    activity.startActivity(i);
+                }
+               else {
+                    boolean isChecked = holder.checkBox.isChecked();
+                    if(isChecked){
+                        holder.checkBox.setChecked(false);
+                        thumbnailsselection[holder.id] = false;
+                    }
+                    else{
+                        holder.checkBox.setChecked(true);
+                        thumbnailsselection[holder.id] = true;
+                    }
+                }
             }
         });
 

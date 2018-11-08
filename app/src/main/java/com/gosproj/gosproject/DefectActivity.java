@@ -121,6 +121,7 @@ public class DefectActivity extends AppCompatActivity
         {
             Intent intent = new Intent();
             intent.putParcelableArrayListExtra("defects", returnDefects);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             setResult(Activity.RESULT_OK, intent);
             finish();
         }
@@ -252,6 +253,7 @@ public class DefectActivity extends AppCompatActivity
             case android.R.id.home:
                 Intent intent = new Intent();
                 intent.putParcelableArrayListExtra("defects", returnDefects);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 setResult(Activity.RESULT_OK, intent);
                 finish();
                 return true;
@@ -265,6 +267,7 @@ public class DefectActivity extends AppCompatActivity
     {
         Intent intent = new Intent();
         intent.putParcelableArrayListExtra("defects", returnDefects);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         setResult(Activity.RESULT_OK, intent);
         finish();
     }

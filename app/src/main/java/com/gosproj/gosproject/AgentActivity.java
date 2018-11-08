@@ -200,22 +200,22 @@ public class AgentActivity extends AppCompatActivity
             uorg.setChecked(agent.isUpolnomochOrg);
             nameCompany.getEditText().setText(agent.nameCompany);
             if(agent.isZakazchik){
-                oldRole = "заказчиком";
+                oldRole = "заказчика";
             }
             else if(agent.isPodryadchik){
-                oldRole = "подрядчиком";
+                oldRole = "подрядчика";
             }
             else if(agent.isEngineeringService){
-                oldRole = "инженерной службой";
+                oldRole = "инженерной службы";
             }
             else if(agent.isAvtNadzor){
-                oldRole = "авторским надзором";
+                oldRole = "авторского надзора";
             }
             else if(agent.isSubPodryadchik){
-                oldRole = "субподрядчиком";
+                oldRole = "субподрядчика";
             }
             else if(agent.isUpolnomochOrg){
-                oldRole = "уполномоченными органами";
+                oldRole = "уполномоченных органов";
             }
             oldAgent = agent.nameCompany + "|" + agent.rang + "|" + agent.fio + "|" + oldRole;
             save.setText(resources.getString(R.string.edit));
@@ -314,23 +314,23 @@ public class AgentActivity extends AppCompatActivity
         cv.put("isEngineeringService", String.valueOf((engService.isChecked()) ? 1 : 0));
 
         if(customer.isChecked()){
-            newRole = "заказчиком";
+            newRole = "заказчика";
         }
         else if(provider.isChecked())
         {
-            newRole = "подрядчиком";
+            newRole = "подрядчика";
         }
         else if(engService.isChecked()){
-            newRole = "инженерной службой";
+            newRole = "инженерной службы";
         }
         else if(avt_nadz.isChecked()){
-            newRole = "авторским надзором";
+            newRole = "авторского надзора";
         }
         else if(subprovider.isChecked()){
-            newRole = "субподрядчиком";
+            newRole = "субподрядчика";
         }
         else if(uorg.isChecked()){
-            newRole = "уполномоченными органами";
+            newRole = "уполномоченных органов";
         }
         long rowID = db.update(dbHelper.getDatabaseName(), cv, "id="+String.valueOf(agent.id), null);
 
@@ -339,7 +339,7 @@ public class AgentActivity extends AppCompatActivity
 
             Log.d("ADD_POS", (int) rowID + " editable");
             agent = new Agent(agent.id, id, nameCompany.getEditText().getText().toString(), rang.getEditText().getText().toString(), fio.getEditText().getText().toString(), provider.isChecked(),
-                    subprovider.isChecked(), customer.isChecked(), engService.isChecked(), avt_nadz.isChecked(), uorg.isChecked(), null);
+                    subprovider.isChecked(), customer.isChecked(), engService.isChecked(), avt_nadz.isChecked(), uorg.isChecked(), false, null);
             result = true;
         }
         else
@@ -377,29 +377,29 @@ public class AgentActivity extends AppCompatActivity
 
         long rowID = db.insert(dbHelper.getDatabaseName(), null, cv);
         if(customer.isChecked()){
-            newRole = "заказчиком";
+            newRole = "заказчика";
         }
         else if(provider.isChecked())
         {
-            newRole = "подрядчиком";
+            newRole = "подрядчика";
         }
         else if(engService.isChecked()){
-            newRole = "инженерной службой";
+            newRole = "инженерной службы";
         }
         else if(avt_nadz.isChecked()){
-            newRole = "авторским надзором";
+            newRole = "авторского надзора";
         }
         else if(subprovider.isChecked()){
-            newRole = "субподрядчиком";
+            newRole = "субподрядчика";
         }
         else if(uorg.isChecked()){
-            newRole = "уполномоченными органами";
+            newRole = "уполномоченных органов";
         }
         if (rowID != 0)
         {
 
             agent = new Agent((int) rowID, id, nameCompany.getEditText().getText().toString(), rang.getEditText().getText().toString(), fio.getEditText().getText().toString(), provider.isChecked(),
-                    subprovider.isChecked(), customer.isChecked(), engService.isChecked(), avt_nadz.isChecked(), uorg.isChecked(), null);
+                    subprovider.isChecked(), customer.isChecked(), engService.isChecked(), avt_nadz.isChecked(), uorg.isChecked(),false, null);
             result = true;
             Log.d("ADD_POS", (int) rowID + " ");
         }

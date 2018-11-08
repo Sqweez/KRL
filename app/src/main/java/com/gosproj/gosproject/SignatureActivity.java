@@ -37,6 +37,9 @@ public class SignatureActivity extends AppCompatActivity {
     Toolbar toolbar;
     Agent agent;
     int id;
+    TextView zamerName;
+    TextView defectName;
+    TextView probaName;
     TextView rgu;
     TextView name;
     TextView work;
@@ -49,6 +52,7 @@ public class SignatureActivity extends AppCompatActivity {
     View line1;
     View line3;
     View line2;
+    View line4;
     LogsHelper logsHelper;
     String agentS;
     String oldRole;
@@ -78,9 +82,15 @@ public class SignatureActivity extends AppCompatActivity {
         dbHelper.close();
         cursor.close();
         if(zamer.size() > 0){
-            zamery += "Выполненные замеры:";
+            zamerName.setVisibility(View.VISIBLE);
             for(int i=0; i<zamer.size();i++){
-                zamery += "\n" + zamer.get(i);
+                if(i == zamer.size() - 1){
+                    zamery += "- " + zamer.get(i);
+                }
+                else{
+                    zamery += "- " + zamer.get(i) + "\n";
+                }
+
             }
         }
         if(!zamery.equals("")){
@@ -113,9 +123,15 @@ public class SignatureActivity extends AppCompatActivity {
         db.close();
         dbHelper.close();
         if(defect.size() > 0){
-            defects += "Выявленные дефекты:";
+            defectName.setVisibility(View.VISIBLE);
             for(int i = 0; i < defect.size(); i++){
-                defects += "\n" + defect.get(i);
+                if (i == defect.size() - 1){
+                    defects += "- " + defect.get(i);
+
+                }
+                else{
+                    defects += "- " + defect.get(i) + "\n";
+                }
             }
         }
         if(!defects.equals("")){
@@ -148,9 +164,16 @@ public class SignatureActivity extends AppCompatActivity {
         db.close();
         dbHelper.close();
         if(proba.size() > 0){
-            probs += "Отобранные пробы:";
+            probaName.setVisibility(View.VISIBLE);
             for(int i=0; i<proba.size();i++){
-                probs += "\n" + proba.get(i);
+                if(i == proba.size() - 1){
+                    probs += "- " + proba.get(i);
+
+                }
+                else{
+                    probs += "- " + proba.get(i) + "\n";
+
+                }
             }
         }
         if(!probs.equals("")){
@@ -175,7 +198,7 @@ public class SignatureActivity extends AppCompatActivity {
         cursor.close();
         db.close();
         dbHelper.close();
-        vyezd = object + "\n" + date + "\n" + vid_rabot;
+        vyezd = "" + object + "\n" + date + "\n" + vid_rabot;
         infoObject.setText(vyezd);
     }
     @Override
@@ -187,10 +210,16 @@ public class SignatureActivity extends AppCompatActivity {
         line1.setVisibility(View.GONE);
         line2.setVisibility(View.GONE);
         line3.setVisibility(View.GONE);
-        getVyezd();
-        getZamery();
-        getDefects();
-        getProbs();
+        if(!agent.isRgu){
+            getVyezd();
+            getZamery();
+            getDefects();
+            getProbs();
+        }
+        if(agent.isRgu){
+            infoObject.setVisibility(View.GONE);
+            line4.setVisibility(View.GONE);
+        }
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -202,11 +231,14 @@ public class SignatureActivity extends AppCompatActivity {
         context = getApplicationContext();
         logsHelper = new LogsHelper(LogsHelper.SIGNATURE, context, activity, id);
         resources = getResources();
-
         save = (Button) findViewById(R.id.save);
         rgu = (TextView) findViewById(R.id.rgu);
         name = (TextView) findViewById(R.id.fio);
         work = (TextView) findViewById(R.id.work);
+
+        zamerName = (TextView) findViewById(R.id.infoZameryName);
+        defectName = (TextView) findViewById(R.id.infoDefectyName);
+        probaName = (TextView) findViewById(R.id.infoProbyName);
 
         infoObject = (TextView) findViewById(R.id.infoObject);
         infoZamer = (TextView) findViewById(R.id.infoZamery);
@@ -216,10 +248,13 @@ public class SignatureActivity extends AppCompatActivity {
         line1 = (View) findViewById(R.id.line1);
         line2 = (View) findViewById(R.id.line2);
         line3 = (View) findViewById(R.id.line3);
+        line4 = findViewById(R.id.lineObject);
 
         rgu.setText(agent.nameCompany);
         name.setText(agent.fio);
         work.setText(agent.rang);
+        String msg = " |" + agent.rang + "|" + agent.fio;
+        logsHelper.createLog(msg, "", LogsHelper.ACTION_OPEN);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(resources.getString(R.string.app_name));
@@ -264,6 +299,7 @@ public class SignatureActivity extends AppCompatActivity {
         {
             Intent intent = new Intent();
             intent.putExtra("agent", agent);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             setResult(Activity.RESULT_OK, intent);
             finish();
         }

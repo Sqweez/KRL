@@ -58,6 +58,7 @@ import com.gosproj.gosproject.Fragments.ActTwoFragment;
 import com.gosproj.gosproject.Functionals.DBHelper;
 import com.gosproj.gosproject.Functionals.NavigationDrawer;
 import com.gosproj.gosproject.Services.LoadScanService;
+import com.gosproj.gosproject.Services.LogsHelper;
 import com.gosproj.gosproject.Structures.Act;
 import com.gosproj.gosproject.Structures.Agent;
 import com.gosproj.gosproject.Structures.Defects;
@@ -85,8 +86,8 @@ public class ActActivity extends AppCompatActivity {
     ViewPager viewPager;
     CircleIndicator circleIndicator;
     ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-    boolean isGpsEnabled;
     Menu menu;
+    int isNew;
     AlertDialog alert;
     Boolean dummyCondition = false;
     ActFourFragment actFourFragment = null;
@@ -152,33 +153,14 @@ public class ActActivity extends AppCompatActivity {
                     handler.postDelayed(runnable, delay);
             }
         }, delay);
-        /*if(!CheckGpsStatus()){
-            AlertDialog.Builder builder;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                builder = new AlertDialog.Builder(context, android.R.style.Theme_Material_Light_Dialog_Alert);
-            } else {
-                builder = new AlertDialog.Builder(context);
-            }
-            builder.setTitle("Внимание!");
-            builder.setMessage("Для заполнения результатов выезда необходимо включить GPS");
-            builder.setCancelable(false);
-            builder.setPositiveButton("Продолжить", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Intent intent1 = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                    startActivity(intent1);
-                }
-            });
-            builder.create().show();
-        }*/
     }
 
     public void writeFromLabToAgents(String name) {
         DBHelper dbHelper = DBHelper.getInstance(context, DBHelper.Agents);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM Agents WHERE fio = ?", new String[]{name});
+        Cursor cursor = db.rawQuery("SELECT * FROM Agents WHERE fio = ? AND idDept = ?", new String[]{name, String.valueOf(act.id)});
         if (!cursor.moveToFirst()) {
-            if (!name.trim().isEmpty() && !dummyCondition) {
+            if (!name.trim().isEmpty()) {
                 ContentValues cv = new ContentValues();
                 cv.put("idDept", act.id);
                 cv.put("nameCompany", act.rgu);
@@ -233,19 +215,27 @@ public class ActActivity extends AppCompatActivity {
             act.inj_sluzhby = cursor.getString(cursor.getColumnIndex("inj_sluzhby"));
             act.avt_nadzor = cursor.getString(cursor.getColumnIndex("avt_nadzor"));
             act.uorg = cursor.getString(cursor.getColumnIndex("uorg"));
+            isNew = cursor.getInt(cursor.getColumnIndex("isNew"));
+            if(act.podradchyk != null)
             act.podradchyk = act.podradchyk.replace("&quot;", "\"");
             act.zakazchik = cursor.getString(cursor.getColumnIndex("zakazchik"));
             act.rgu = cursor.getString(cursor.getColumnIndex("rgu_name"));
+            if(act.zakazchik != null)
             act.zakazchik = act.zakazchik.replace("&quot;", "\"");
         }
         cursor.close();
         db.close();
         dbHelper.close();
+
+        if(isNew == 1){
+            LogsHelper logsHelper = new LogsHelper(LogsHelper.NEWDEPARTURE, context, activity, id);
+            logsHelper.createLog(act.object + "|" + act.vid_rabot + "|" + act.ispolnitel + "|" + act.gruppa_vyezda1 + "|" + act.gruppa_vyezda2 + "|" + act.gruppa_vyezda3, "", LogsHelper.ACTION_ADD);
+        }
+
         writeFromLabToAgents(act.ispolnitel);
         writeFromLabToAgents(act.gruppa_vyezda1);
         writeFromLabToAgents(act.gruppa_vyezda2);
         writeFromLabToAgents(act.gruppa_vyezda3);
-        dummyCondition = true;
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(resources.getString(R.string.app_name));
@@ -264,7 +254,7 @@ public class ActActivity extends AppCompatActivity {
         actSixFragment = ActSixFragment.getInstance(act.id, fab);
         actSevenFragment = ActSevenFragment.getInstance(act.id, fab);
         actEightFragment = ActEightFragment.getInstance(act.id, fab);
-        ActCloseFragment actCloseFragment = ActCloseFragment.getInstance(act.object + "\n" + act.vid_rabot, act.id);
+        ActCloseFragment actCloseFragment = ActCloseFragment.getInstance(act.object + "\n" + act.vid_rabot, act.id, isNew, String.valueOf(act.idNomer), act.object, act.date, act.ispolnitel, act.gruppa_vyezda1, act.gruppa_vyezda2, act.gruppa_vyezda3, act.vid_rabot);
 
         fragments.add(actOneFragment);
         fragments.add(actFreeFragment);
@@ -404,6 +394,12 @@ public class ActActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed()
+    {
+        startActivity(new Intent(context, MainActivity.class));
+        finish();
+    }
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case 10:
@@ -451,6 +447,16 @@ public class ActActivity extends AppCompatActivity {
                     break;
                 case REQUEST_ADD_MEASURMENT:
                     ArrayList<Measurment> measurments = data.getParcelableArrayListExtra("measurments");
+                    LogsHelper logsHelper = new LogsHelper(LogsHelper.MEAS, context, activity, id);
+                    int action = data.getIntExtra("action", 0);
+                    String old_item = data.getStringExtra("old");
+                    if(action == LogsHelper.ACTION_ADD){
+                        logsHelper.createLog(old_item, "",  action);
+                    }
+                    else{
+                        String new_item = data.getStringExtra("new");
+                        logsHelper.createLog(old_item, new_item, action);
+                    }
                     actFreeFragment.setResult(measurments);
                 case REQUEST_ADD_AGENT:
                     Agent agent = data.getParcelableExtra("agent");
@@ -488,11 +494,11 @@ public class ActActivity extends AppCompatActivity {
                 }
                 else if (currentPos == 2)
                 {
-                    actFourFragment.removeElements();
+                    actFiveFragment.removeElements();
                 }
                 else if (currentPos == 3)
                 {
-                    actFiveFragment.removeElements();
+                    actFourFragment.removeElements();
                 }
                 else if (currentPos == 4)
                 {
@@ -515,11 +521,11 @@ public class ActActivity extends AppCompatActivity {
                 }
                 else if (currentPos == 2)
                 {
-                    actFourFragment.removeElementsOk();
+                    actFiveFragment.removeElementsOk();
                 }
                 else if (currentPos == 3)
                 {
-                    actFiveFragment.removeElementsOk();
+                    actFourFragment.removeElementsOk();
                 }
                 else if (currentPos == 4)
                 {

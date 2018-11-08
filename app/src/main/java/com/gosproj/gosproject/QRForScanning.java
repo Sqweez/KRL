@@ -47,6 +47,19 @@ public class QRForScanning extends AppCompatActivity {
         integrator.setOrientationLocked(true);
         integrator.initiateScan();
     }
+    public static boolean isNumeric(String str)
+    {
+        try
+        {
+            int i = Integer.parseInt(str);
+        }
+        catch(NumberFormatException nfe)
+        {
+            return false;
+        }
+        return true;
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -60,12 +73,17 @@ public class QRForScanning extends AppCompatActivity {
             } else {
                 String dataFromQr = result.getContents();
                 String[] strings = dataFromQr.split("\\|");
-                Log.d("DEBUG_QR", strings[0]);
-                Log.d("DEBUG_QR", strings[1]);
-                Log.d("DEBUG_QR", strings[2]);
-                Intent intent = new Intent(this, ScanActivity.class);
-                intent.putExtra("data", strings);
-                startActivity(intent);
+                if(isNumeric(strings[0]) && isNumeric(strings[1]) && strings.length == 3){
+                    Intent intent = new Intent(this, ScanActivity.class);
+                    intent.putExtra("data", strings);
+                    startActivity(intent);
+                }
+                else{
+                    Toast.makeText(activity, "Отсканирован некорректный QR-код", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(this, MainActivity.class));
+                    finish();
+                }
+
             }
         }
     }

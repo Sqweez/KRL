@@ -36,11 +36,11 @@ import java.util.Locale;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class LogsHelper extends Service {
-    public String action;
     public String item;
     FusedLocationProviderClient client;
     Context context;
     Activity activity;
+    public static String NEWDEPARTURE = "NewDeparture";
     public static String MEAS = "Meas";
     public static String PROBA = "Proba";
     public static String DEFECT = "Defect";
@@ -48,9 +48,12 @@ public class LogsHelper extends Service {
     public static String SIGNATURE = "Signature";
     public static String PHOTO = "Photo";
     public static String VIDEO = "Video";
+    public static String DEPARTURE = "Departure";
     public static int ACTION_ADD = 0;
     public static int ACTION_EDIT = 1;
     public static int ACTION_DELETE = 2;
+    public static int ACTION_OPEN = 3;
+    public static int ACTION_CLOSE = 4;
     int idDept;
     public LogsHelper(String item, Context context, Activity activity, int idDept) {
         this.item = item;
@@ -86,17 +89,73 @@ public class LogsHelper extends Service {
             @Override
             public void onComplete(@NonNull Task<Location> task) {
                 switch (item) {
+                    case "NewDeparture":
+                        DBHelper dbHelperNd = new DBHelper(context, DBHelper.Logs);
+                        SQLiteDatabase dbNd = dbHelperNd.getWritableDatabase();
+                        ContentValues cvNd = new ContentValues();
+                        String[] object = old_item.split("\\|");
+                        String exist = "";
+                        if(object.length > 3){
+                            if(!object[3].equals(""))
+                                exist+= ", ПРИСУТСВУЮЩИЕ: " + object[3];
+                        }
+                        if(object.length > 4){
+                            if(!object[4].equals(""))
+                                exist+= ", " + object[4];
+                        }
+                        if(object.length > 5){
+                            if(!object[5].equals(""))
+                                exist+= ", " + object[5];
+                        }
+                        if(action == ACTION_ADD){
+                            cvNd.put("log_text", getDateTime() + ": ДОБАВЛЕН НОВЫЙ АКТ, ОБЪЕКТ: " + object[0] + ", ВИД РАБОТ: " + object[1] + ", ОТВЕТСТВЕННЫЙ: " + object[2] + exist);
+                        }
+                        else if(action == ACTION_CLOSE){
+                            cvNd.put("log_text", getDateTime() + ": ЗАКРЫТ НОВЫЙ АКТ, ОБЪЕКТ: " + object[0] + ", ВИД РАБОТ: " + object[1] + ", ОТВЕТСТВЕННЫЙ: " + object[2] + exist);
+                        }
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            double lat = task.getResult().getLatitude();
+                            double lon = task.getResult().getLongitude();
+                            cvNd.put("lat", lat);
+                            cvNd.put("long", lon);
+                        }
+                        cvNd.put("idDept", idDept);
+                        dbNd.insert(dbHelperNd.getDatabaseName(), null, cvNd);
+                        dbHelperNd.close();
+                        dbNd.close();
+                        break;
+                    case "Departure":
+                        DBHelper dbHelperDp = new DBHelper(context, DBHelper.Logs);
+                        SQLiteDatabase dbDp = dbHelperDp.getWritableDatabase();
+                        ContentValues cvDp = new ContentValues();
+                        if(action == ACTION_ADD){
+                            cvDp.put("log_text", getDateTime() + ": ДОБАВЛЕН АКТ №" + old_item);
+                        }
+                        else if(action == ACTION_CLOSE){
+                            cvDp.put("log_text", getDateTime() + ": ЗАКРЫТ АКТ №" + old_item);
+                        }
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            double lat = task.getResult().getLatitude();
+                            double lon = task.getResult().getLongitude();
+                            cvDp.put("lat", lat);
+                            cvDp.put("long", lon);
+                        }
+                        cvDp.put("idDept", idDept);
+                        dbDp.insert(dbHelperDp.getDatabaseName(), null, cvDp);
+                        dbHelperDp.close();
+                        dbDp.close();
+                        break;
                     case "Meas":
                         DBHelper dbHelperM = new DBHelper(context, DBHelper.Logs);
                         SQLiteDatabase dbM = dbHelperM.getWritableDatabase();
                         ContentValues cvM = new ContentValues();
                         if (action == ACTION_EDIT) {
-                            cvM.put("log_text", getDateTime() + ": Замер изменен со значения '" + old_item
-                                    + "' на значение '" + new_item + "'");
+                            cvM.put("log_text", getDateTime() + ": ЗАМЕР ИЗМЕНЕН СО ЗНАЧЕНИЯ " + old_item
+                                    + " НА ЗНАЧЕНИЕ " + new_item);
                         } else if (action == ACTION_ADD) {
-                            cvM.put("log_text", getDateTime() + ": Добавлен замер '" + old_item + "'");
+                            cvM.put("log_text", getDateTime() + ": ДОБАВЛЕН ЗАМЕР " + old_item);
                         } else if (action == ACTION_DELETE) {
-                            cvM.put("log_text", getDateTime() + ": Удален замер '" + old_item + "'");
+                            cvM.put("log_text", getDateTime() + ": УДАЛЕН ЗАМЕР " + old_item);
                         }
                         if (task.isSuccessful() && task.getResult() != null) {
                             double lat = task.getResult().getLatitude();
@@ -117,37 +176,36 @@ public class LogsHelper extends Service {
                         ContentValues cvP = new ContentValues();
                         if (action == ACTION_EDIT) {
                             String msg = getDateTime() +
-                                    ": Проба ДСМ: " + oldProba[0] +
-                                    ", количество: " + oldProba[1] +
-                                    ", место отбора: " + oldProba[3] +
-                                    ", поставщик: " + oldProba[2] +
-                                    ", для вида работ " + oldProba[4] +
-                                    " ИЗМЕНЕНА на Проба ДСМ: " + newProba[0] +
-                                    ", количество: " + newProba[1] +
-                                    ", место отбора: " + newProba[3] +
-                                    ", поставщик: " + newProba[2] +
-                                    ", для вида работ " + newProba[4];
+                                    ": ПРОБА ДСМ: " + oldProba[0] +
+                                    ", КОЛИЧЕСТВО: " + oldProba[1] +
+                                    ", МЕСТО ОТБОРА: " + oldProba[3] +
+                                    ", ПОСТАВЩИК: " + oldProba[2] +
+                                    ", ДЛЯ ВИДА РАБОТ " + oldProba[4] +
+                                    " ИЗМЕНЕНА НА ПРОБУ ДСМ: " + newProba[0] +
+                                    ", КОЛИЧЕСТВО: " + newProba[1] +
+                                    ", МЕСТО ОТБОРА: " + newProba[3] +
+                                    ", ПОСТАВЩИК: " + newProba[2] +
+                                    ", ДЛЯ ВИДА РАБОТ " + newProba[4];
                             Log.d("log_proba", msg);
                             cvP.put("log_text", msg );
                         }
                         else if(action == ACTION_ADD){
                             String msg = getDateTime() + ": " +
-                                "Добавлена проба ДСМ: " + newProba[0] +
-                                ", количество: " + newProba[1] +
-                                ", место отбора: " + newProba[3] +
-                                ", поставщик: " + newProba[2] +
-                                ", для вида работ " + newProba[4];
+                                "ДОБАВЛЕНА ПРОБА ДСМ: " + newProba[0] +
+                                ", КОЛИЧЕСТВО: " + newProba[1] +
+                                ", МЕСТО ОТБОРА: " + newProba[3] +
+                                ", ПОСТАВЩИК: " + newProba[2] +
+                                ", ДЛЯ ВИДА РАБОТ " + newProba[4];
                             Log.d("log_proba", msg);
                             cvP.put("log_text", msg);
                         }
                         else if(action == ACTION_DELETE){
                             String msg = getDateTime() + ": " +
-                                    getDateTime() + ": " +
-                                    "Удалена проба ДСМ: " + oldProba[0] +
-                                    ", количество: " + oldProba[1] +
-                                    ", место отбора: " + oldProba[3] +
-                                    ", поставщик: " + oldProba[2] +
-                                    ", для вида работ " + oldProba[4];
+                                    "УДАЛЕНА ПРОБА ДСМ: " + oldProba[0] +
+                                    ", КОЛИЧЕСТВО: " + oldProba[1] +
+                                    ", МЕСТО ОТБОРА: " + oldProba[3] +
+                                    ", ПОСТАВЩИК: " + oldProba[2] +
+                                    ", ДЛЯ ВИДА РАБОТ " + oldProba[4];
                             Log.d("log_proba", msg);
                             cvP.put("log_text", msg);
                         }
@@ -169,25 +227,18 @@ public class LogsHelper extends Service {
                         SQLiteDatabase dbA = dbHelperA.getWritableDatabase();
                         ContentValues cvA = new ContentValues();
                         if(action == ACTION_EDIT){
-                            String msg = getDateTime() + ": Изменен присутствующий представитель " +
-                                    "'" + oldAgent[0] + "', являющийся " + oldAgent[3] + " , "
-                                    + oldAgent[2] + ", " + oldAgent[1] + "на '" +
-                                    newAgent[0] + "', являющийся " + newAgent[3] + ", "
-                                    + newAgent[2] + ", " + newAgent[1];
+                            String msg = getDateTime() + ": ПРИСУТСТВУЮЩИЙ ПРЕДСТАВИТЕЛЬ " + oldAgent[3] + " " + oldAgent[0]
+                                    + ", ФИО: " + oldAgent[2] + ", ДОЛЖНОСТЬ: " + oldAgent[1] + " ИЗМЕНЕН НА ПРЕДСТАВИТЕЛЯ " + newAgent[3] + " " + newAgent[0] + ", ФИО: " + newAgent[2] + ", ДОЛЖНОСТЬ: " + newAgent[1];
                             cvA.put("log_text", msg);
                         }
                         else if(action == ACTION_ADD){
                             String msg = getDateTime() + ": " +
-                                    "Добавлен присутствующий представитель " +
-                                    "'" + newAgent[0] + "', являющийся " + newAgent[3] + " , "
-                                    + newAgent[2] + ", " + newAgent[1];
+                                    "ДОБАВЛЕН ПРИСУТСТВУЮЩИЙ ПРЕДСТАВИТЕЛЬ " + newAgent[3] + " " + newAgent[0] + ", ФИО: " + newAgent[2] + ", ДОЛЖНОСТЬ: " + newAgent[1];
                             cvA.put("log_text", msg);
                         }
                         else if(action == ACTION_DELETE){
                             String msg = getDateTime() + ": " +
-                                    "Удален присутствующий представитель " +
-                                    "'" + oldAgent[0] + "', являющийся " + oldAgent[3] + " , "
-                                    + oldAgent[2] + ", " + oldAgent[1];
+                                    "УДАЛЕН ПРИСУТСТВУЮЩИЙ ПРЕДСТАВИТЕЛЬ " + oldAgent[3] + " " + oldAgent[0] + ", ФИО: " + oldAgent[2] + ", ДОЛЖНОСТЬ: " + oldAgent[1];
                             cvA.put("log_text", msg);
                         }
                         if (task.isSuccessful() && task.getResult() != null) {
@@ -206,16 +257,16 @@ public class LogsHelper extends Service {
                         SQLiteDatabase dbD = dbHelperD.getWritableDatabase();
                         ContentValues cvD = new ContentValues();
                         if(action == ACTION_EDIT){
-                            String msg = getDateTime() + ": дефект '" + old_item + "' ИЗМЕНЕН на '" +
+                            String msg = getDateTime() + ": ДЕФЕКТ " + old_item + " ИЗМЕНЕН НА" +
                                     new_item;
                             cvD.put("log_text", msg);
                         }
                         else if(action == ACTION_ADD){
-                            String msg = getDateTime() + ": добавлен дефект '" + new_item + "'";
+                            String msg = getDateTime() + ": ДОБАВЛЕН ДЕФЕКТ " + new_item;
                             cvD.put("log_text", msg);
                         }
                         else if(action == ACTION_DELETE){
-                            String msg = getDateTime() + ": удален дефект '" + old_item + "'";
+                            String msg = getDateTime() + ": УДАЛЕН ДЕФЕКТ " + old_item;
                             cvD.put("log_text", msg);
                         }
                         if (task.isSuccessful() && task.getResult() != null) {
@@ -235,9 +286,11 @@ public class LogsHelper extends Service {
                         SQLiteDatabase dbS = dbHelperS.getWritableDatabase();
                         ContentValues cvS = new ContentValues();
                         if(action == ACTION_ADD){
-                            String msg = getDateTime() + ": добавлена подпись присутствующего представителя " +
-                                    "'" + oldAgentS[0] + "', являющегося " + oldAgentS[3] + " , "
-                                    + oldAgentS[2] + ", " + oldAgentS[1];
+                            String msg = getDateTime() + ": ДОКУМЕНТ ПОДПИСАН " + oldAgentS[2] + ", " + oldAgentS[1];
+                            cvS.put("log_text", msg);
+                        }
+                        else if(action == ACTION_OPEN){
+                            String msg = getDateTime() + ": ОТКРЫТА СТРАНИЦА ДЛЯ ПОДПИСИ " + oldAgentS[2] + ", " + oldAgentS[1];
                             cvS.put("log_text", msg);
                         }
                         if (task.isSuccessful() && task.getResult() != null) {
@@ -256,11 +309,11 @@ public class LogsHelper extends Service {
                         SQLiteDatabase dbPh = dbHelperPh.getWritableDatabase();
                         ContentValues cvPh = new ContentValues();
                         if(action == ACTION_ADD){
-                            String msg = getDateTime() + ": ДОБАВЛЕНА фотография";
+                            String msg = getDateTime() + ": ДОБАВЛЕНА ФОТОГРАФИЯ, " + old_item;
                             cvPh.put("log_text", msg);
                         }
                         else if(action == ACTION_DELETE){
-                            String msg = getDateTime() + ": УДАЛЕНА фотография";
+                            String msg = getDateTime() + ": УДАЛЕНА ФОТОГРАФИЯ, " + old_item;
                             cvPh.put("log_text", msg);
                         }
                         if (task.isSuccessful() && task.getResult() != null) {
@@ -279,11 +332,11 @@ public class LogsHelper extends Service {
                         SQLiteDatabase dbV = dbHelperV.getWritableDatabase();
                         ContentValues cvV = new ContentValues();
                         if(action == ACTION_ADD){
-                            String msg = getDateTime() + ": ДОБАВЛЕНО видео";
+                            String msg = getDateTime() + ": ДОБАВЛЕНО ВИДЕО, " + old_item;
                             cvV.put("log_text", msg);
                         }
                         else if(action == ACTION_DELETE){
-                            String msg = getDateTime() + ": УДАЛЕНО видео";
+                            String msg = getDateTime() + ": УДАЛЕНО ВИДЕО, " + old_item;
                             cvV.put("log_text", msg);
                         }
                         if (task.isSuccessful() && task.getResult() != null) {

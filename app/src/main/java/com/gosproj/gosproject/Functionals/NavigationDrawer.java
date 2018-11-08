@@ -10,20 +10,17 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
-import com.gosproj.gosproject.Fragments.ActCloseFragment;
+import com.gosproj.gosproject.CreateActActivity;
 import com.gosproj.gosproject.LoadDept;
 import com.gosproj.gosproject.MainActivity;
 import com.gosproj.gosproject.QRForScanning;
 import com.gosproj.gosproject.R;
-import com.gosproj.gosproject.Structures.MainCategory;
-import com.gosproj.gosproject.Structures.SecondaryCategory;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -33,21 +30,15 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-/**
- * Created by Андрей on 07.08.2017.
- */
 
 public class NavigationDrawer {
     Context context;
@@ -56,7 +47,7 @@ public class NavigationDrawer {
     Toolbar toolbar;
     String name;
     String rgu_name;
-    Drawer result;
+    static Drawer result;
 
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
@@ -71,7 +62,6 @@ public class NavigationDrawer {
         name = user_info.getString("name", "ИМЯ ТЕСТ");
         rgu_name = user_info.getString("rgu_name", "РГУ ТЕСТ");
         SharedPreferences sharedPref = context.getSharedPreferences(resources.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        //TODO Вернуть позже
         PrimaryDrawerItem Main = new PrimaryDrawerItem().withIdentifier(2)
                 .withName(resources.getString(R.string.active_task))
                 .withIcon(R.drawable.ic_list_bulleted)
@@ -91,9 +81,9 @@ public class NavigationDrawer {
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        Toast toast = Toast.makeText(context, "Пункт меню дорабатывается", Toast.LENGTH_SHORT);
-                        toast.show();
-                        return false;
+                        activity.getApplicationContext().startActivity(new Intent(activity.getApplicationContext(), CreateActActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                        return true;
                     }
                 });
         PrimaryDrawerItem newDeparture = new PrimaryDrawerItem().withIdentifier(3)
@@ -109,19 +99,21 @@ public class NavigationDrawer {
                         return true;
                     }
                 });
-       /* PrimaryDrawerItem createDeparture = new PrimaryDrawerItem().withIdentifier(3)
-                .withName(resources.getString(R.string.load_departure))
-                .withIcon(R.drawable.ic_file_download)
+        PrimaryDrawerItem update = new PrimaryDrawerItem().withIdentifier(7)
+                .withName(R.string.update)
+                .withIcon(R.drawable.ic_sync)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        activity.getApplicationContext().startActivity(new Intent(activity.getApplicationContext(), LoadDept.class)
-                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                        activity.finish();
-
+                        final String appPackageName = activity.getPackageName();
+                        try{
+                            activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                        }catch (android.content.ActivityNotFoundException e){
+                            activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                        }
                         return true;
                     }
-                });*/
+                });
         PrimaryDrawerItem scanning = new PrimaryDrawerItem().withIdentifier(5)
                 .withName(resources.getString(R.string.scanning))
                 .withIcon(R.drawable.icon_scanner)
@@ -142,16 +134,14 @@ public class NavigationDrawer {
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        Toast toast = Toast.makeText(context, "Пункт меню дорабатывается", Toast.LENGTH_SHORT);
-                        toast.show();
-                        return true;
-                       /* Sync sync = new Sync(activity);
+                        Sync sync = new Sync(activity);
                         sync.execute();
 
                         if (result != null) {
                             result.closeDrawer();
                         }
-*/
+                        return true;
+
                     }
                 });
         PrimaryDrawerItem logout = new PrimaryDrawerItem().withIdentifier(4)
@@ -165,6 +155,69 @@ public class NavigationDrawer {
                         db.delete("Users", null, null);
                         dbHelper.close();
                         db.close();
+                        DBHelper dbHelperL = new DBHelper(context, DBHelper.Logs);
+                        SQLiteDatabase dbL = dbHelperL.getWritableDatabase();
+
+                        dbL.delete(DBHelper.Logs, null, null);
+
+                        dbHelperL.close();
+                        dbL.close();
+
+                        DBHelper dbHelperDp = new DBHelper(context, DBHelper.DEPARTURE);
+                        SQLiteDatabase dbDp = dbHelperDp.getWritableDatabase();
+
+                        dbDp.delete(DBHelper.DEPARTURE, null, null);
+
+                        dbHelperDp.close();
+                        dbDp.close();
+
+                        DBHelper dbHelpeM = new DBHelper(context, DBHelper.MEASUREMENTS);
+                        SQLiteDatabase dbM = dbHelpeM.getWritableDatabase();
+
+                        dbM.delete(DBHelper.MEASUREMENTS, null, null);
+
+                        dbHelpeM.close();
+                        dbM.close();
+
+                        DBHelper dbHelpeP = new DBHelper(context, DBHelper.PROBS);
+                        SQLiteDatabase dbP = dbHelpeP.getWritableDatabase();
+
+                        dbP.delete(DBHelper.PROBS, null, null);
+
+                        dbHelpeP.close();
+                        dbP.close();
+
+                        DBHelper dbHelpeD = new DBHelper(context, DBHelper.DEFECTS);
+                        SQLiteDatabase dbD = dbHelpeD.getWritableDatabase();
+
+                        dbD.delete(DBHelper.DEFECTS, null, null);
+
+                        dbHelpeD.close();
+                        dbD.close();
+
+                        DBHelper dbHelpeA = new DBHelper(context, DBHelper.Agents);
+                        SQLiteDatabase dbA = dbHelpeA.getWritableDatabase();
+
+                        dbA.delete(DBHelper.Agents, null, null);
+
+                        dbHelpeA.close();
+                        dbA.close();
+
+                        DBHelper dbHelpePh = new DBHelper(context, DBHelper.Photos);
+                        SQLiteDatabase dbPh = dbHelpePh.getWritableDatabase();
+
+                        dbPh.delete(DBHelper.Photos, null, null);
+
+                        dbHelpePh.close();
+                        dbPh.close();
+
+                        DBHelper dbHelpeV = new DBHelper(context, DBHelper.Videos);
+                        SQLiteDatabase dbV = dbHelpeV.getWritableDatabase();
+
+                        dbV.delete(DBHelper.Videos, null, null);
+
+                        dbHelpeV.close();
+                        dbV.close();
                         SharedPreferences user_info = context.getSharedPreferences("com.gosproj.gosproject", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = user_info.edit();
                         editor.clear();
@@ -212,22 +265,20 @@ public class NavigationDrawer {
                 .withActivity(activity)
                 .withToolbar(toolbar)
                 .addDrawerItems(
-                        //TODO Вернуть позже
                         Main,
                         newDeparture,
                         newAct,
-                      /* // TODO Вернуть как будет готово
-                       *//* synchronization,*//*,*/
                         new DividerDrawerItem(),
                         scanning,
                         new DividerDrawerItem(),
                         synchronization,
                         logout,
-                        exit
-                        //TODO Остатки Синхронизации
-                        /*new DividerDrawerItem(),
+                        exit,
+                        new DividerDrawerItem(),
+                        update,
+                        new DividerDrawerItem(),
                         new SecondaryDrawerItem().withName(resources.getString(R.string.last_time_sync) + ":").withSelectable(false),
-                        secondaryDrawerItem*/
+                        secondaryDrawerItem
                 )
                 .build();
     }
@@ -259,6 +310,7 @@ public class NavigationDrawer {
     class Sync extends AsyncTask<Void, Void, String> {
         Activity activity;
         SweetAlertDialog sDialog;
+        int res = 0;
 
         SharedPreferences sharedPref;
         SharedPreferences.Editor editor;
@@ -272,7 +324,6 @@ public class NavigationDrawer {
 
         @Override
         protected void onPreExecute() {
-            //Отображаем системный диалог загрузки
             sDialog = new SweetAlertDialog(activity, SweetAlertDialog.PROGRESS_TYPE);
             sDialog.getProgressHelper().setBarColor(Color.parseColor("#535c69"));
             sDialog.setTitleText("Идет синхронизация");
@@ -280,14 +331,11 @@ public class NavigationDrawer {
             sDialog.show();
         }
 
-
         @Override
         protected String doInBackground(Void... unused) {
             DBHelper dbHelper = new DBHelper(context, DBHelper.OfflineZip);
             SQLiteDatabase db = dbHelper.getWritableDatabase();
-
             Cursor cursor = db.rawQuery("SELECT * FROM OfflineZip", null);
-
             if (cursor.moveToFirst()) {
                 do {
                     if (isOnline()) {
@@ -306,7 +354,7 @@ public class NavigationDrawer {
                             e.printStackTrace();
                         }
 
-                        DateFormat df = new SimpleDateFormat("Время: HH:mm:ss Дата: yyyy.MM.dd");
+                        DateFormat df = new SimpleDateFormat("Время: HH:mm:ss dd.MM.yyyy");
                         String date = df.format(Calendar.getInstance().getTime());
 
                         editor.putString("timeSync", date);
@@ -314,6 +362,9 @@ public class NavigationDrawer {
                     }
                 }
                 while (cursor.moveToNext());
+            }
+            else{
+                res = 1;
             }
 
             cursor.close();
@@ -326,6 +377,25 @@ public class NavigationDrawer {
         @Override
         protected void onPostExecute(String unused) {
             sDialog.hide();
+            if(res == 0 && isOnline()){
+                new SweetAlertDialog(activity, SweetAlertDialog.SUCCESS_TYPE)
+                        .setTitleText("Синхронизация выполненена успешно")
+                        .setConfirmText("OK")
+                        .show();
+            }
+            else if(!isOnline()){
+                new SweetAlertDialog(activity, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("Отсутствует подключение к интернету")
+                        .setConfirmText("OK")
+                        .show();
+            }
+            else if(res == 1){
+                new SweetAlertDialog(activity, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("Нечего синхронизировать")
+                        .setConfirmText("OK")
+                        .show();
+            }
+
         }
     }
 }

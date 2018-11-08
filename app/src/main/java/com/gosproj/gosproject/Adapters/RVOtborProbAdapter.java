@@ -104,6 +104,17 @@ public class RVOtborProbAdapter extends RecyclerView.Adapter<RVOtborProbAdapter.
                 {
                     rvOnClickInterface.onClick(probs.get(position));
                 }
+                else{
+                    boolean isChecked = holder.checkBox.isChecked();
+                    if(isChecked){
+                        holder.checkBox.setChecked(false);
+                        removes.remove(probs.get(position));
+                    }
+                    else{
+                        holder.checkBox.setChecked(true);
+                        removes.add(probs.get(position));
+                    }
+                }
             }
         });
     }

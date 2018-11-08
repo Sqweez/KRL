@@ -19,6 +19,7 @@ public class InstructionActivity extends AppCompatActivity {
     Context context;
     Button btnContinue;
     Activity activity;
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {

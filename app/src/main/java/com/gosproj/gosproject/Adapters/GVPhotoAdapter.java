@@ -21,6 +21,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gosproj.gosproject.Functionals.PhotoRequestHandler;
 import com.gosproj.gosproject.Functionals.VideoRequestHandler;
@@ -94,7 +95,7 @@ public class GVPhotoAdapter extends BaseAdapter
     @Override
     public View getView(final int position, View convertView, ViewGroup parent)
     {
-        ViewHolder holder;
+        final ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
             convertView = mInflater.inflate(
@@ -142,37 +143,29 @@ public class GVPhotoAdapter extends BaseAdapter
 
         holder.image.setBackgroundColor(color);
 
-        /*
-        Picasso.with(activity).load(image).fit().centerCrop().into(holder.image, new com.squareup.picasso.Callback() {
-                    @Override
-                    public void onSuccess() {
-                        Log.d("PICASSO", "IMAGE IN LOAD");
-                    }
-
-                    @Override
-                    public void onError() {
-                        Log.d("PICASSO", "IMAGE FARAL ERROR");
-                    }
-                });
-
-        Picasso.Builder builder = new Picasso.Builder(activity);
-        builder.listener(new Picasso.Listener() {
-            @Override
-            public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
-                Log.d("PICASSO", exception.getMessage());
-            }
-        });*/
-
         picassoInstance.load("image:"+image.getPath()).into(holder.image);
 
         holder.image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                File videoFile2Play2 = new File(photos.get(position).path);
-                Intent i = new Intent(Intent.ACTION_VIEW, FileProvider.getUriForFile(context, "com.gosproj.gosproject", videoFile2Play2));
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                i.setDataAndType(FileProvider.getUriForFile(context, "com.gosproj.gosproject", videoFile2Play2), "image/jpg");
-                activity.startActivity(i);
+                if(!selected){
+                    File videoFile2Play2 = new File(photos.get(position).path);
+                    Intent i = new Intent(Intent.ACTION_VIEW, FileProvider.getUriForFile(context, "com.gosproj.gosproject", videoFile2Play2));
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    i.setDataAndType(FileProvider.getUriForFile(context, "com.gosproj.gosproject", videoFile2Play2), "image/jpg");
+                    activity.startActivity(i);
+                }
+                else{
+                    boolean isChecked = holder.checkBox.isChecked();
+                    if(isChecked){
+                        holder.checkBox.setChecked(false);
+                        thumbnailsselection[holder.id] = false;
+                    }
+                    else{
+                        holder.checkBox.setChecked(true);
+                        thumbnailsselection[holder.id] = true;
+                    }
+                }
             }
         });
 

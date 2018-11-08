@@ -182,7 +182,7 @@ public class ActEightFragment extends Fragment
 
         long rowID = db.insert(dbHelper.getDatabaseName(), null, cv);
 
-        logsHelper.createLog("", "", LogsHelper.ACTION_ADD);
+        logsHelper.createLog(fullPath.getName(), "", LogsHelper.ACTION_ADD);
 
         if (rowID != 0)
         {
@@ -223,7 +223,8 @@ public class ActEightFragment extends Fragment
 
         for (int i=0; i<removes.size(); i++)
         {
-            logsHelper.createLog("", "", LogsHelper.ACTION_DELETE);
+            String[] fileName = removes.get(i).path.split("\\/");
+            logsHelper.createLog(fileName[9], "", LogsHelper.ACTION_DELETE);
             int delCount = db.delete(DBHelper.Videos, "id = ?",
                     new String[]{String.valueOf(removes.get(i).id)});
         }

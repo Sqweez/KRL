@@ -78,10 +78,14 @@ public class ActFreeFragment extends Fragment implements RVOnClickInterface<Meas
 
         if (cursor.moveToFirst())
         {
-            int id = cursor.getInt(cursor.getColumnIndex("id"));
-            int idDept = cursor.getInt(cursor.getColumnIndex("idDept"));
-            String value = cursor.getString(cursor.getColumnIndex("name"));
-            measurments.add(new Measurment(id, idDept, value));
+            do{
+                int id = cursor.getInt(cursor.getColumnIndex("id"));
+                int idDept = cursor.getInt(cursor.getColumnIndex("idDept"));
+                String value = cursor.getString(cursor.getColumnIndex("name"));
+                measurments.add(new Measurment(id, idDept, value));
+            }
+            while (cursor.moveToNext());
+
         }
 
         db.close();

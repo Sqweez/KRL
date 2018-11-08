@@ -18,7 +18,7 @@ public class Agent implements Parcelable
     public boolean isSubPodryadchik;
     public boolean isAvtNadzor;
     public boolean isUpolnomochOrg;
-
+    public boolean isRgu;
     public Agent(int id,
                  int idDept,
                  String nameCompany,
@@ -30,6 +30,7 @@ public class Agent implements Parcelable
                  boolean isEngineeringSerice,
                  boolean isAvtNadzor,
                  boolean isUpolnomochOrg,
+                 boolean isRgu,
                  byte[] blob)
     {
         this.id = id;
@@ -43,6 +44,7 @@ public class Agent implements Parcelable
         this.isAvtNadzor = isAvtNadzor;
         this.isUpolnomochOrg = isUpolnomochOrg;
         this.isEngineeringService = isEngineeringSerice;
+        this.isRgu = isRgu;
         this.blob = blob;
     }
 
@@ -54,6 +56,7 @@ public class Agent implements Parcelable
         fio = in.readString();
         blob = in.createByteArray();
         isPodryadchik = in.readByte() != 0;
+        isRgu = in.readByte() != 0;
         isSubPodryadchik = in.readByte() != 0;
         isZakazchik = in.readByte() != 0;
         isAvtNadzor = in.readByte() != 0;
@@ -87,6 +90,7 @@ public class Agent implements Parcelable
         dest.writeString(fio);
         dest.writeByteArray(blob);
         dest.writeByte((byte) (isPodryadchik ? 1 : 0));
+        dest.writeByte((byte) (isRgu ? 1 : 0));
         dest.writeByte((byte) (isSubPodryadchik ? 1 : 0));
         dest.writeByte((byte) (isZakazchik ? 1 : 0));
         dest.writeByte((byte) (isAvtNadzor ? 1 : 0));

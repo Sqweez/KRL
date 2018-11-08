@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -29,17 +30,13 @@ import com.gosproj.gosproject.Functionals.ServerApi;
 import com.gosproj.gosproject.MainActivity;
 import com.gosproj.gosproject.R;
 import com.gosproj.gosproject.Services.CreateAndLoadService;
+import com.gosproj.gosproject.Services.LogsHelper;
 import com.gosproj.gosproject.Structures.Act;
 import com.gosproj.gosproject.Structures.Agent;
 import com.gosproj.gosproject.Structures.Defects;
 import com.gosproj.gosproject.Structures.Photo;
 import com.gosproj.gosproject.Structures.Proba;
 import com.gosproj.gosproject.Structures.Videos;
-
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
-import net.lingala.zip4j.model.ZipParameters;
-import net.lingala.zip4j.util.Zip4jConstants;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -87,10 +84,19 @@ public class ActCloseFragment extends Fragment
     Context context;
     Resources resources;
     Activity activity;
-
+    LogsHelper logsHelper;
     String name;
     int id;
     int actID;
+    int isNew;
+    String actNumber;
+    String object;
+    String date;
+    String ispolnitel;
+    String gv1;
+    String gv2;
+    String gv3;
+    String vid_rabot;
     TextView text;
     TextView act;
     Button buttonClose;
@@ -99,13 +105,22 @@ public class ActCloseFragment extends Fragment
     private static final Random random = new Random();
     private static final String CHARS = "ABCDEFGHJKLMNOPQRSTUVWXYZ";
 
-    public static ActCloseFragment getInstance(String name, int id)
+    public static ActCloseFragment getInstance(String name, int id, int isNew, String actNumber, String object, String date, String ispolnitel, String gv1, String gv2, String gv3, String vid_rabot)
     {
         Bundle args = new Bundle();
         ActCloseFragment fragment = new ActCloseFragment();
         fragment.setArguments(args);
         fragment.name = name;
         fragment.id = id;
+        fragment.object = object;
+        fragment.actNumber = actNumber;
+        fragment.isNew = isNew;
+        fragment.date = date;
+        fragment.ispolnitel = ispolnitel;
+        fragment.gv1 = gv1;
+        fragment.gv2 = gv2;
+        fragment.gv3 = gv3;
+        fragment.vid_rabot = vid_rabot;
         return fragment;
     }
 
@@ -130,7 +145,6 @@ public class ActCloseFragment extends Fragment
             while (cursor.moveToNext());
         }
         if(isAllSigned){
-            buttonCloseWS.setVisibility(View.GONE);
             text.setVisibility(TextView.INVISIBLE);
             buttonClose.setEnabled(true);
         }
@@ -149,6 +163,8 @@ public class ActCloseFragment extends Fragment
         context = activity.getApplicationContext();
         resources = activity.getResources();
         text = (TextView) view.findViewById(R.id.warningAboutButton);
+
+        logsHelper = new LogsHelper(LogsHelper.DEPARTURE, context, activity, id);
 
         text.setText("Кнопка закрыть акт будет недоступна, пока все присутствующие не поставят подпись");
         act = (TextView) view.findViewById(R.id.act);
@@ -187,11 +203,35 @@ public class ActCloseFragment extends Fragment
 
         db.close();
         dbHelper.close();
+        if(isNew == 0){
+            logsHelper.createLog(actNumber, "", LogsHelper.ACTION_CLOSE);
+        }
+        else{
+            LogsHelper logs = new LogsHelper(LogsHelper.NEWDEPARTURE, context, activity, id);
+            logs.createLog(object + "|" + vid_rabot + "|" + ispolnitel + "|" + gv1 + "|" + gv2 + "|" + gv3, "", LogsHelper.ACTION_CLOSE);
+        }
+        Intent intentService = new Intent(activity, CreateAndLoadService.class);
+        intentService.putExtra("id", id);
+        intentService.putExtra("isNew", isNew);
 
-        activity.startService(new Intent(activity, CreateAndLoadService.class).putExtra("id", id));
+        if(isOnline()){
+            SharedPreferences sharedPref = context.getSharedPreferences(resources.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            DateFormat df = new SimpleDateFormat("Время: HH:mm:ss dd.MM.yyyy");
+            String date = df.format(Calendar.getInstance().getTime());
+            editor.putString("timeSync", date);
+            editor.commit();
+        }
 
+        activity.startService(intentService);
         Intent intent = new Intent(activity, MainActivity.class);
         activity.startActivity(intent);
         activity.finish();
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }
